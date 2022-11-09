@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import routes from "./Routes";
 import { errorHandling } from "./Services/error.services";
 
+const PORT = process.env.PORT || 3000;
 const app = express();
 dotenv.config();
 const connect = () => {
@@ -19,7 +20,7 @@ const connect = () => {
 app.use(json({ limit: "21mb" }));
 app.use(routes);
 app.use(errorHandling);
-app.listen("3030", () => {
+app.listen(PORT, () => {
     connect();
     console.log("Connected");
 });
