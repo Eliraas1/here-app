@@ -5,8 +5,8 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "nodemon --exec npx ts-node ./src/index.ts",
-        "dev": "tsc-watch --onSuccess \"node . dist/index.js\"",
+        "start": "node --exec npx ts-node ./src/index.ts",
+        "dev": "nodemon --exec npx ts-node ./src/index.ts",
         "build": "tsc",
         "postinstall": "npm run build"
     },
