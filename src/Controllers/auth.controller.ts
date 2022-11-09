@@ -10,6 +10,7 @@ export const signUp = async (
 ) => {
     try {
         const { name, email, password } = req.body;
+        // console.log({ name });
         const user = await getUserByEmail(email);
 
         if (user) return next(createError(400, "Email is already in use"));
