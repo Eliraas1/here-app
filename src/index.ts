@@ -6,6 +6,7 @@ import { errorHandling } from "./Services/error.services";
 
 const app = express();
 dotenv.config();
+const PORT = process.env.PORT || "3000";
 const connect = () => {
     mongoose
         .connect(process.env.MONGO_PATH as string, { dbName: "HereApp" })
@@ -19,7 +20,7 @@ const connect = () => {
 app.use(json({ limit: "21mb" }));
 app.use(routes);
 app.use(errorHandling);
-app.listen("3030", () => {
+app.listen(PORT, () => {
     connect();
     console.log("Connected");
 });
