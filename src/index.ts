@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import routes from "./Routes";
 import { errorHandling } from "./Services/error.services";
 
+const PORT = process.env.PORT || 3000;
 const app = express();
 dotenv.config();
 const PORT = process.env.PORT || "3000";
