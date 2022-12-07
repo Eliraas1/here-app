@@ -1,8 +1,8 @@
 import express, { json } from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import routes from "./Routes";
-import { errorHandling } from "./Services/error.services";
+// import routes from "./Routes";
+// import { errorHandling } from "./Services/error.services";
 const app = express();
 dotenv.config();
 const PORT = process.env.PORT || "3000";
@@ -16,9 +16,9 @@ const connect = () => {
             throw err;
         });
 };
-app.use(json({ limit: "21mb" }));
-app.use(routes);
-app.use(errorHandling);
+// app.use(json({ limit: "21mb" }));
+// app.use(routes);
+// app.use(errorHandling);
 app.listen(PORT, () => {
     connect();
     console.log("Connected");
