@@ -4,7 +4,7 @@ import { Router } from "express";
 const routes = Router();
 
 routes.get("/", async (req, res) => {
-    res.status(200).json({ data: "hello" });
+    res.status(200).json({ data: "helloasdasdasdasd" });
 });
 
 // routes.use("/auth", authRouter);
