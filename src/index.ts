@@ -3,9 +3,9 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import routes from "./Routes";
 import { errorHandling } from "./Services/error.services";
-dotenv.config();
 const app = express();
-const PORT = process.env.PORT || "3000";
+dotenv.config();
+const PORT = "3000";
 const connect = () => {
     mongoose
         .connect(process.env.MONGO_PATH as string, { dbName: "HereApp" })
