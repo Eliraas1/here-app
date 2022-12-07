@@ -5,7 +5,7 @@ import routes from "./Routes";
 import { errorHandling } from "./Services/error.services";
 const app = express();
 dotenv.config();
-const PORT = "3000";
+const PORT = process.env.PORT || "3000";
 const connect = () => {
     mongoose
         .connect(process.env.MONGO_PATH as string, { dbName: "HereApp" })
@@ -20,6 +20,6 @@ app.use(json({ limit: "21mb" }));
 app.use(routes);
 app.use(errorHandling);
 app.listen(PORT, () => {
-    connect();
+    // connect();
     console.log("Connected");
 });
