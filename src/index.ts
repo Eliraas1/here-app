@@ -20,6 +20,6 @@ app.use(json({ limit: "21mb" }));
 app.use(routes);
 app.use(errorHandling);
 app.listen(PORT, () => {
-    connect();
+    // connect();
     console.log("Connected");
 });
