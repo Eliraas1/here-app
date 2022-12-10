@@ -9,13 +9,13 @@ export const getUserByEmail = async (
         if (password) {
             user = await User.findOne({
                 email,
-            })
-                .select("+password")
-                .populate(["tasks"]);
+            }).select("+password");
+            // .populate(["tasks"]);
         } else {
             user = await User.findOne({
                 email,
-            }).populate(["tasks"]);
+            });
+            // .populate(["tasks"]);
         }
         return user as UserType;
     } catch (error: any) {
@@ -41,6 +41,13 @@ export const createUser = async (user: UserType) => {
             email: user.email.toLowerCase(),
         });
         return await createdUser.save();
+    } catch (error: any) {
+        throw new Error(error.message as string);
+    }
+};
+export const updateUser = async (user: UserType) => {
+    try {
+        await User.updateOne({ email: user.email.toLowerCase() }, { ...user });
     } catch (error: any) {
         throw new Error(error.message as string);
     }

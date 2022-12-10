@@ -7,6 +7,6 @@ routes.get("/", async (req, res) => {
     res.status(200).json({ data: "hello" });
 });
 
-routes.use("/auth", authRouter);
+routes.use("/", authRouter);
 
 export default routes;
