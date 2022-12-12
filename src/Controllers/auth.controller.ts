@@ -3,9 +3,9 @@ import {
     createUser,
     getUserByEmail,
     updateUser,
-} from "../Services/user.services";
+} from "../Services/user.service";
 import { genSalt, hash, compareSync, hashSync, compare } from "bcrypt";
-import { UserType } from "../Models/User";
+import User, { UserType } from "../Models/User";
 import { createError } from "../Services/error.services";
 import { validateLoginSchema } from "../Validations/ValidateAuthSchema";
 import {
@@ -20,8 +20,8 @@ export const signUp = async (
     next: NextFunction
 ) => {
     try {
-        console.log("asdasdsad", req.body);
-        const { name, email, password } = req.body;
+        const { email, password } = req.body;
+        const name = req.body.fullName;
         const user = await getUserByEmail(email);
 
         if (user) return next(createError(400, "Email is already in use"));
@@ -33,17 +33,31 @@ export const signUp = async (
             email,
             password: hashedPassword,
         };
-        const { password: pass, ...restUser } = await createUser(userFields);
+        const {
+            password: pass,
+            name: fullName,
+            email: emailAddress,
+            _id,
+        } = await createUser(userFields);
+
         return res.status(200).json({
             success: true,
             message: "Registration Success",
-            data: restUser,
+            data: {
+                name: fullName,
+                email: emailAddress,
+                _id,
+            },
         });
     } catch (error: any) {
         next(error);
     }
 };
-export const Login = async (req: Request, res: Response) => {
+export const Login = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const result = validateLoginSchema(req.body);
         if (result.error)
@@ -51,19 +65,21 @@ export const Login = async (req: Request, res: Response) => {
                 .status(400)
                 .json({ success: false, message: result.error.message });
 
-        const user = await getUserByEmail(result.value.email, true);
-
+        const user = await getUserByEmail(result.value.email);
+        // console.log(user);
         if (!user)
-            return res
-                .status(400)
-                .json({ success: false, message: "Invalid email or password" });
+            return res.status(400).json({
+                success: false,
+                message: "Invalid email or password",
+            });
 
         const match = await compare(result.value.password, user.password);
 
         if (!match)
-            return res
-                .status(400)
-                .json({ success: false, message: "Invalid email or password" });
+            return res.status(400).json({
+                success: false,
+                message: "Invalid email or password",
+            });
 
         const { password, _id, email, name, tasks } = user;
         const accessToken = generateAccessToken({
@@ -75,9 +91,9 @@ export const Login = async (req: Request, res: Response) => {
             userId: _id as string,
         });
 
-        delete result.value.password;
+        // delete result.value.password;
 
-        await updateUser(result.value);
+        // await updateUser(result.value);
 
         return res
             .status(200)
@@ -86,17 +102,14 @@ export const Login = async (req: Request, res: Response) => {
                 secure: false,
                 domain: process.env.COOKIE_DOMAIN || "localhost",
                 path: "/",
-                expires: moment(new Date())
-                    .utc(true)
-                    .add(10, "seconds")
-                    .toDate(),
+                expires: moment(new Date()).utc(true).add(1, "hour").toDate(),
             })
             .cookie("refreshToken", refreshToken, {
                 httpOnly: true,
                 secure: false,
                 domain: process.env.COOKIE_DOMAIN || "localhost",
                 path: "/",
-                expires: moment(new Date()).utc(true).add(14, "days").toDate(),
+                expires: moment(new Date()).utc(true).add(90, "days").toDate(),
             })
             .json({
                 success: true,
@@ -110,6 +123,7 @@ export const Login = async (req: Request, res: Response) => {
                         name,
                         tasks,
                     },
+                    signIn: true,
                 },
             });
     } catch (error: any) {
@@ -119,19 +133,30 @@ export const Login = async (req: Request, res: Response) => {
         });
     }
 };
-// export const Login = async (req: Request, res: Response) => {
-//     const { generateKeyPairSync } = require("crypto");
+export const Logout = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { accessToken, refreshToken } = req.cookies;
 
-//     const { privateKey, publicKey } = generateKeyPairSync("rsa", {
-//         modulusLength: 4096,
-//         publicKeyEncoding: {
-//             type: "spki",
-//             format: "pem",
-//         },
-//         privateKeyEncoding: {
-//             type: "pkcs8",
-//             format: "pem",
-//         },
-//     });
-//     res.status(200).json({ privateKey, publicKey });
-// };
+        refreshToken &&
+            res.clearCookie("refreshToken", {
+                httpOnly: true,
+                sameSite: "none",
+                secure: false,
+            });
+        accessToken &&
+            res.clearCookie("accessToken", {
+                httpOnly: true,
+                sameSite: "none",
+                secure: false,
+            });
+        return res
+            .status(200)
+            .json({ success: true, message: "logout successfully" });
+    } catch (error: any) {
+        next(createError(400, error));
+    }
+};

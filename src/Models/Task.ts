@@ -1,8 +1,10 @@
 import { Schema, model, Document } from "mongoose";
 export interface TaskType extends Document {
-    _id: string;
-    name: string;
-    done: boolean;
+    _id?: string;
+    name?: string;
+    done?: boolean;
+    expires?: Date;
+    details?: string;
 }
 const TaskSchema = new Schema(
     {
@@ -17,6 +19,15 @@ const TaskSchema = new Schema(
         done: {
             type: Boolean,
             default: false,
+        },
+        expires: {
+            type: Date,
+            default: null,
+        },
+        user: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
         },
     },
     { timestamps: true }

@@ -20,16 +20,16 @@ const connect = () => {
 };
 const app = express();
 app.use(cookieParser());
-// app.use(
-//     cors({
-//         credentials: true,
-//         origin: ["http://localhost:3030", "*"],
-//         exposedHeaders: ["Set-Cookie"],
-//     })
-// );
+app.use(
+    cors({
+        credentials: true,
+        origin: ["http://localhost:3000", "*"],
+        exposedHeaders: ["Set-Cookie"],
+    })
+);
 app.use(cookieParser());
 app.use(json({ limit: "21mb" }));
-// app.use(urlencoded({ extended: true, limit: "21mb" }));
+app.use(urlencoded({ extended: true, limit: "21mb" }));
 app.use(routes);
 app.use(errorHandling);
 app.listen(PORT, () => {

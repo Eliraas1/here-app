@@ -6,7 +6,7 @@ import {
     generateAccessToken,
     generateRefreshToken,
 } from "../Services/jwtService";
-import { getUserByEmail, getUserById } from "../Services/user.services";
+import { getUserByEmail, getUserById } from "../Services/user.service";
 
 const RefreshToken = async (
     req: Request,
@@ -16,22 +16,24 @@ const RefreshToken = async (
     try {
         const { refreshToken } = req.cookies;
         if (!refreshToken) return res.sendStatus(401);
-
         verify(
             refreshToken as string,
             process.env.publicKey as string,
             async (err: any, decoded: any) => {
                 if (err) {
+                    //expired refresh token
+                    //TODO: remove cookies!
                     return res.status(403).json({
                         success: false,
                         message: "Unauthorized user",
+                        signIn: false,
                     });
                 }
                 const accessToken = generateAccessToken({
                     email: decoded?.email,
                     userId: decoded?.userId,
                 });
-                const newRefreshToken = generateAccessToken({
+                const newRefreshToken = generateRefreshToken({
                     email: decoded?.email,
                     userId: decoded?.userId,
                 });
@@ -46,6 +48,7 @@ const RefreshToken = async (
                     return res.status(403).json({
                         success: false,
                         message: "Unauthorized user",
+                        signIn: false,
                     });
                 }
 
@@ -58,7 +61,7 @@ const RefreshToken = async (
                     sameSite: "none",
                     expires: moment(new Date())
                         .utc(true)
-                        .add(10, "seconds")
+                        .add(1, "hour")
                         .toDate(),
                 }).cookie("refreshToken", newRefreshToken, {
                     httpOnly: true,
@@ -68,7 +71,7 @@ const RefreshToken = async (
                     sameSite: "none",
                     expires: moment(new Date())
                         .utc(true)
-                        .add(14, "days")
+                        .add(90, "days")
                         .toDate(),
                 });
                 console.log("done with refresh token");
@@ -79,6 +82,7 @@ const RefreshToken = async (
         return res.status(400).json({
             success: false,
             message: error.message,
+            signIn: false,
         });
     }
 };

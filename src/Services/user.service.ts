@@ -1,10 +1,11 @@
 import User, { UserType } from "../Models/User";
 
 export const getUserByEmail = async (
-    email: string,
+    emailAddress: string,
     password: boolean = false
 ): Promise<UserType> => {
     let user;
+    const email = emailAddress.toLowerCase().trim();
     try {
         if (password) {
             user = await User.findOne({
@@ -48,6 +49,14 @@ export const createUser = async (user: UserType) => {
 export const updateUser = async (user: UserType) => {
     try {
         await User.updateOne({ email: user.email.toLowerCase() }, { ...user });
+    } catch (error: any) {
+        throw new Error(error.message as string);
+    }
+};
+export const getMyProfile = async (_id: string) => {
+    try {
+        const user = await User.findOne({ _id }).select("name email tasks");
+        return { ...JSON.parse(JSON.stringify(user)), signIn: true };
     } catch (error: any) {
         throw new Error(error.message as string);
     }
