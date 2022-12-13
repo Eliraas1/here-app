@@ -18,7 +18,7 @@ const RefreshToken = async (
         if (!refreshToken) return res.sendStatus(401);
         verify(
             refreshToken as string,
-            process.env.publicKey as string,
+            (process.env.publicKey as string).replace(/\\n/gm, "\n"),
             async (err: any, decoded: any) => {
                 if (err) {
                     //expired refresh token
