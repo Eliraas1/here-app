@@ -1,3 +1,4 @@
+import moment from "moment";
 import { Schema, model, Document } from "mongoose";
 export interface TaskType extends Document {
     _id?: string;
@@ -29,7 +30,14 @@ const TaskSchema = new Schema(
             ref: "User",
             required: true,
         },
+        targetDate: {
+            type: String,
+            required: false,
+            default: moment().format("MM/DD/YYYY"),
+        },
     },
     { timestamps: true }
 );
+
+// const formattedDate = moment(task.targetDate).format("MM/DD/YYYY");
 export default model<TaskType>("Task", TaskSchema);
