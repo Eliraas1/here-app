@@ -13,18 +13,26 @@ interface JwtProps {
 }
 
 export const generateAccessToken = (user: JwtProps) => {
-    const accessToken = sign(user, process.env.privateKey as string, {
-        algorithm: "RS256",
-        expiresIn: "1h",
-    });
+    const accessToken = sign(
+        user,
+        (process.env.privateKey as string).replace(/\\n/gm, "\n"),
+        {
+            algorithm: "RS256",
+            expiresIn: "1h",
+        }
+    );
     return accessToken;
 };
 
 export const generateRefreshToken = (user: JwtProps) => {
-    const refreshToken = sign(user, process.env.privateKey as string, {
-        algorithm: "RS256",
-        expiresIn: "90d",
-    });
+    const refreshToken = sign(
+        user,
+        (process.env.privateKey as string).replace(/\\n/gm, "\n"),
+        {
+            algorithm: "RS256",
+            expiresIn: "90d",
+        }
+    );
     return refreshToken;
 };
 
@@ -44,7 +52,7 @@ export const authenticateAccessToken = async (
 
     verify(
         accessToken as string,
-        process.env.publicKey as string,
+        (process.env.publicKey as string).replace(/\\n/gm, "\n"),
         async (err: any, decoded: any) => {
             if (err) {
                 // return res.status(403).json({
