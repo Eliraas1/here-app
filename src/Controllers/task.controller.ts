@@ -43,7 +43,7 @@ export const GetUserTasksByDate = async (
                 message: "user not found or user is not logged in",
             });
         const { _id } = user;
-        const { date } = req.params;
+        const { date } = req.body;
         if (!date)
             return res.status(400).json({
                 success: false,
