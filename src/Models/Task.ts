@@ -33,7 +33,7 @@ const TaskSchema = new Schema(
         targetDate: {
             type: String,
             required: false,
-            default: moment().format("MM/DD/YYYY"),
+            default: moment().format("DD/MM/YYYY"),
         },
     },
     { timestamps: true }

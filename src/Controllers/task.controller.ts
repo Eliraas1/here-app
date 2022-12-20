@@ -44,6 +44,7 @@ export const GetUserTasksByDate = async (
             });
         const { _id } = user;
         const { date } = req.body;
+        console.log(date);
         if (!date)
             return res.status(400).json({
                 success: false,
