@@ -7,6 +7,10 @@ import {
     editTask,
     getUserTaskById,
 } from "../Services/task.service";
+import { BodyTaskType, Frequency, TaskType } from "../Models/Task";
+import moment from "moment";
+
+type Units = moment.unitOfTime.DurationConstructor | undefined;
 
 export const AddTask = async (
     req: Request,
@@ -22,13 +26,44 @@ export const AddTask = async (
             });
         const { _id } = user;
         const task = req.body;
-        const data = await addTask(_id, task);
+        const data = await addTaskByFrequency(task, _id);
         return res.status(200).json({
             data,
         });
     } catch (error: any) {
         next(error);
     }
+};
+
+const addTaskByFrequency = async (task: BodyTaskType, id: string) => {
+    const tasks: TaskType[] = [];
+    if (!task.frequency) {
+        const newTask = await addTask(id, task as TaskType);
+        tasks.push(newTask);
+        return tasks;
+    }
+    const freq = task.frequency;
+    const unit = freq.split(" ").at(-1) as Units;
+    const amount = Frequency[freq];
+    const targetDate = task.targetDate;
+    const endDate = task.endDate;
+    if (amount < 1) return;
+
+    const date1 = task.isSetTime
+        ? moment(targetDate)
+        : moment(targetDate).set("hour", 23).set("minute", 59);
+    const date2 = endDate ? moment(endDate) : moment(date1).add(1, "year");
+
+    while (date1 < date2) {
+        const currentDate = date1.toDate(); // start date
+        // const currentDate = date1.clone().toDate(); // start date
+        const updatedTask = { ...task, targetDate: currentDate } as TaskType;
+        const newTask = await addTask(id, updatedTask);
+        tasks.push(newTask);
+        date1.add(amount, unit);
+    }
+
+    return tasks;
 };
 export const GetUserTasksByDate = async (
     req: Request,

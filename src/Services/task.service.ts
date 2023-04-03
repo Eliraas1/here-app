@@ -1,3 +1,4 @@
+import moment from "moment";
 import Task, { TaskType } from "../Models/Task";
 import User from "../Models/User";
 
@@ -62,9 +63,26 @@ export const getUserTasks = async (_id: string) => {
 };
 export const getUserTasksByDate = async (_id: string, date: string) => {
     try {
+        console.log({ date });
+        const date1 = moment(date)
+            .set("hour", 0)
+            .set("minute", 0)
+            .set("second", 0)
+            .toISOString();
+        const date2 = moment(date)
+            .set("hour", 23)
+            .set("minute", 59)
+            .set("second", 59)
+            .toISOString();
         const tasks = await Task.find({
             user: _id,
-            targetDate: date,
+            $and: [
+                { targetDate: { $gte: date1 } },
+                { targetDate: { $lte: date2 } },
+            ],
+            // targetDate: date,
+        }).catch((error: any) => {
+            console.log({ error });
         });
         return tasks;
     } catch (error: any) {
