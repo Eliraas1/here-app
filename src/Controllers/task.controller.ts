@@ -54,7 +54,7 @@ const addTaskByFrequency = async (task: BodyTaskType, id: string) => {
         : moment(targetDate).set("hour", 23).set("minute", 59);
     const date2 = endDate ? moment(endDate) : moment(date1).add(1, "year");
 
-    while (date1 < date2) {
+    while (date1 <= date2) {
         const currentDate = date1.toDate(); // start date
         // const currentDate = date1.clone().toDate(); // start date
         const updatedTask = { ...task, targetDate: currentDate } as TaskType;
