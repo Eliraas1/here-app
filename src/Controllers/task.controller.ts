@@ -37,7 +37,7 @@ export const AddTask = async (
 
 const addTaskByFrequency = async (task: BodyTaskType, id: string) => {
     const tasks: TaskType[] = [];
-    if (!task.frequency) {
+    if (!task.frequency || task.frequency === "None") {
         const newTask = await addTask(id, task as TaskType);
         tasks.push(newTask);
         return tasks;

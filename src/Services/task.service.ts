@@ -63,27 +63,29 @@ export const getUserTasks = async (_id: string) => {
 };
 export const getUserTasksByDate = async (_id: string, date: string) => {
     try {
-        console.log({ date });
-        const date1 = moment(date)
-            .set("hour", 0)
-            .set("minute", 0)
-            .set("second", 0)
-            .toISOString();
-        const date2 = moment(date)
+        const [day, month, year] = new Date(date)
+            .toLocaleDateString("default", {
+                month: "2-digit",
+                day: "2-digit",
+                year: "numeric",
+            })
+            .split(".");
+
+        //without this conversion, utc date can be 02-03 instead of 03-03, and we can get task with incorrect target date
+        const fixedStringToConvert = `${year}-${month}-${day}`;
+        const startDay = new Date(fixedStringToConvert);
+        const endDay = moment(startDay)
             .set("hour", 23)
             .set("minute", 59)
-            .set("second", 59)
-            .toISOString();
+            .set("second", 59);
+
         const tasks = await Task.find({
             user: _id,
             $and: [
-                { targetDate: { $gte: date1 } },
-                { targetDate: { $lte: date2 } },
+                { targetDate: { $gte: startDay } },
+                { targetDate: { $lte: endDay } },
             ],
-            // targetDate: date,
-        }).catch((error: any) => {
-            console.log({ error });
-        });
+        }).sort({ targetDate: "asc" });
         return tasks;
     } catch (error: any) {
         throw new Error(error.message as string);
