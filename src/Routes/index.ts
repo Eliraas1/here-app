@@ -3,6 +3,7 @@ import { authenticateAccessToken } from "../Services/jwtService";
 import authRouter from "./auth.router";
 import taskRouter from "./task.router";
 import userRouter from "./user.router";
+import listsRouter from "./list.router";
 
 const routes = Router();
 
@@ -13,4 +14,5 @@ routes.get("/", async (req, res) => {
 routes.use("/", authRouter);
 routes.use("/user", authenticateAccessToken, userRouter);
 routes.use("/", authenticateAccessToken, taskRouter);
+routes.use("/", authenticateAccessToken, listsRouter);
 export default routes;
