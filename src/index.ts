@@ -32,6 +32,7 @@ app.use(json({ limit: "21mb" }));
 app.use(urlencoded({ extended: true, limit: "21mb" }));
 app.use(routes);
 app.use(errorHandling);
+
 app.listen(PORT, () => {
     connect();
     console.log(`Connected on port ${PORT}`);

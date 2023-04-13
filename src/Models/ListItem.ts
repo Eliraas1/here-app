@@ -6,14 +6,15 @@ export interface ListItemType extends Document {
     description?: string;
     done?: boolean;
     flag?: boolean;
-    checkBoxListType?: CheckBoxListType;
+}
+export interface ListItemTypeBody {
+    _id?: string;
+    description?: string;
+    done?: boolean;
+    flag?: boolean;
 }
 const ListItemSchema = new Schema(
     {
-        name: {
-            type: String,
-            required: true,
-        },
         description: {
             type: String,
             required: true,
@@ -25,11 +26,6 @@ const ListItemSchema = new Schema(
         flag: {
             type: Boolean,
             default: false,
-        },
-        checkBoxListType: {
-            type: String,
-            required: false,
-            default: "V",
         },
     },
     { timestamps: true }

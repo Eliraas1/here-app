@@ -1,30 +1,22 @@
-import moment from "moment";
 import { Schema, model, Document } from "mongoose";
 import { ListItemType } from "./ListItem";
 
+export type CheckBoxListType = "NUMBERS" | "DOTS" | "V" | "NONE";
+export const CheckBoxListTypeArr = ["NUMBERS", "DOTS", "V", "NONE"];
 export interface ListType extends Document {
     _id?: string;
     title?: string;
     flag?: boolean;
-    details?: ListItemType[];
+    listItems?: ListItemType[];
+    checkBoxListType?: CheckBoxListType;
 }
-// export interface BodyTaskType {
-//     _id?: string;
-//     name?: string;
-//     done?: boolean;
-//     details?: string;
-//     push?: boolean;
-//     targetDate?: Date;
-//     endDate?: Date;
-//     isSetTime?: boolean;
-// }
 const ListSchema = new Schema(
     {
         title: {
             type: String,
             required: true,
         },
-        details: [
+        listItems: [
             {
                 type: Schema.Types.ObjectId,
                 required: false,
@@ -35,6 +27,11 @@ const ListSchema = new Schema(
         flag: {
             type: Boolean,
             default: false,
+        },
+        checkBoxListType: {
+            type: String,
+            required: false,
+            default: "V",
         },
     },
     { timestamps: true }
