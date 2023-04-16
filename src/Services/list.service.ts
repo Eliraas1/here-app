@@ -103,7 +103,8 @@ export const deleteList = async (listId: string) => {
 
 export const addItemsToList = async (
     listId: string,
-    items: ListItemTypeBody[]
+    items: ListItemTypeBody[],
+    deleted: ListItemTypeBody[]
 ) => {
     const stack: string[] = [];
     for (let index = 0; index < items.length; index++) {
@@ -111,6 +112,8 @@ export const addItemsToList = async (
         if (!_item) continue;
         stack.push(_item._id);
     }
+    // deleted?.forEach((item) => deleteItemInList(item));
+    deleteManyItemsInList(deleted);
     if (stack.length <= 0) throw new Error("must send items to list");
     const updatedList = List.findByIdAndUpdate(
         listId,
@@ -144,4 +147,12 @@ const addOrUpdateItemToList = async (item: ListItemTypeBody) => {
 export const deleteItemInList = async (itemId: string) => {
     const deletedItem = await ListItem.deleteOne({ _id: itemId });
     return deletedItem;
+};
+export const deleteManyItemsInList = async (items: ListItemTypeBody[]) => {
+    const idsToDelete = items.map((item) => item._id);
+
+    const deletedItems = await ListItem.deleteMany({
+        _id: { $in: idsToDelete },
+    });
+    return deletedItems;
 };
