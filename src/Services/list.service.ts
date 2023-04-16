@@ -123,7 +123,7 @@ export const addItemsToList = async (
     return updatedList;
 };
 const addOrUpdateItemToList = async (item: ListItemTypeBody) => {
-    if (item._id) {
+    if (!item.new) {
         const id = item._id;
         delete item._id;
         const updatedItem = await ListItem.findByIdAndUpdate(id, item, {
@@ -131,6 +131,12 @@ const addOrUpdateItemToList = async (item: ListItemTypeBody) => {
         });
         return updatedItem;
     }
+    if (!item.description) {
+        console.log("not add");
+        return;
+    }
+
+    delete item._id;
     const newItem = new ListItem(item);
     const savedItem = await newItem.save();
     return savedItem;
