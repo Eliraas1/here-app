@@ -12,6 +12,7 @@ export interface ListItemTypeBody {
     description?: string;
     done?: boolean;
     flag?: boolean;
+    new?: true;
 }
 const ListItemSchema = new Schema(
     {

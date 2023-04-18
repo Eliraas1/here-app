@@ -219,7 +219,8 @@ export const AddItems = async (
             });
         const listId = req.body.listId;
         const items = req.body.items;
-        const data = await addItemsToList(listId, items);
+        const deleted = req.body.deleted;
+        const data = await addItemsToList(listId, items, deleted);
         return res.status(200).json({
             data,
             refresh: req.refresh,
