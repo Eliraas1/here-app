@@ -29,6 +29,7 @@ export const AddTask = async (
         const data = await addTaskByFrequency(task, _id);
         return res.status(200).json({
             data,
+            refresh: req.refresh,
         });
     } catch (error: any) {
         next(error);
@@ -87,6 +88,7 @@ export const GetUserTasksByDate = async (
         const data = await getUserTasksByDate(_id, date);
         return res.status(200).json({
             data,
+            refresh: req.refresh,
         });
     } catch (error: any) {
         next(error);
@@ -108,6 +110,7 @@ export const GetUserTasks = async (
         const data = await getUserTasks(_id);
         return res.status(200).json({
             data,
+            refresh: req.refresh,
         });
     } catch (error: any) {
         next(error);
@@ -130,6 +133,7 @@ export const GetUserTaskById = async (
         const data = await getUserTaskById(_id, taskId);
         return res.status(200).json({
             data,
+            refresh: req.refresh,
         });
     } catch (error: any) {
         next(error);
@@ -151,6 +155,7 @@ export const DeleteTask = async (
         const data = await deleteTask(taskId);
         return res.status(200).json({
             data,
+            refresh: req.refresh,
         });
     } catch (error: any) {
         next(error);
@@ -174,6 +179,7 @@ export const EditTask = async (
         // const data = await deleteTask(taskId);
         return res.status(200).json({
             data,
+            refresh: req.refresh,
         });
     } catch (error: any) {
         next(error);

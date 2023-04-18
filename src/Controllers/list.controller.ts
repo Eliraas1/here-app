@@ -52,6 +52,7 @@ export const GetListCategory = async (
         const data = await getListCategory(_id);
         return res.status(200).json({
             data,
+            refresh: req.refresh,
         });
     } catch (error: any) {
         next(error);
@@ -74,6 +75,7 @@ export const DeleteListCategory = async (
         const data = await deleteListCategory(_id, id);
         return res.status(200).json({
             data,
+            refresh: req.refresh,
         });
     } catch (error: any) {
         next(error);
@@ -96,6 +98,7 @@ export const EditListCategory = async (
         const data = await editListCategory(id, name);
         return res.status(200).json({
             data,
+            refresh: req.refresh,
         });
     } catch (error: any) {
         next(error);
@@ -118,6 +121,7 @@ export const AddListToCategory = async (
         const data = await addListToCategory(id, title);
         return res.status(200).json({
             data,
+            refresh: req.refresh,
         });
     } catch (error: any) {
         next(error);
@@ -140,6 +144,7 @@ export const EditListTitle = async (
         const data = await editListTitle(id, title);
         return res.status(200).json({
             data,
+            refresh: req.refresh,
         });
     } catch (error: any) {
         next(error);
@@ -171,6 +176,7 @@ export const EditListCheckBoxType = async (
         const data = await editListCheckBoxType(id, checkboxType);
         return res.status(200).json({
             data,
+            refresh: req.refresh,
         });
     } catch (error: any) {
         next(error);
@@ -193,6 +199,7 @@ export const DeleteList = async (
         const data = await deleteList(id);
         return res.status(200).json({
             data,
+            refresh: req.refresh,
         });
     } catch (error: any) {
         next(error);
@@ -215,6 +222,7 @@ export const AddItems = async (
         const data = await addItemsToList(listId, items);
         return res.status(200).json({
             data,
+            refresh: req.refresh,
         });
     } catch (error: any) {
         next(error);
@@ -236,6 +244,7 @@ export const DeleteItem = async (
         const data = await deleteItemInList(id);
         return res.status(200).json({
             data,
+            refresh: req.refresh,
         });
     } catch (error: any) {
         next(error);

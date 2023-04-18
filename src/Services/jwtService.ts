@@ -3,13 +3,14 @@ import { Request, Response, NextFunction } from "express";
 import { JwtPayload, sign, verify, VerifyErrors } from "jsonwebtoken";
 import { UserType } from "../Models/User";
 import { getUserByEmail, getUserById } from "./user.service";
-
 interface JwtProps {
     email: string;
     userId: string;
     fbId?: string;
     gId?: string;
     phone?: string;
+    exp?: number;
+    iat?: number;
 }
 
 export const generateAccessToken = (user: JwtProps) => {
@@ -42,42 +43,44 @@ export const authenticateAccessToken = async (
     next: NextFunction
 ) => {
     const accessToken = req.cookies["accessToken"] || "";
+    // console.log(accessToken && accessToken.slice(10));
     if (!accessToken) {
         return res.status(401).json({
             success: false,
             signIn: false,
-            message: "Unauthorized user",
+            message: "No access token cookie!",
         });
     }
 
-    verify(
-        accessToken as string,
-        (process.env.publicKey as string).replace(/\\n/gm, "\n"),
-        async (err: any, decoded: any) => {
-            if (err) {
-                // return res.status(403).json({
-                //     success: false,
-                //     message: "Unauthorized user",
-                // });
-                return await RefreshToken(req, res, next);
-            }
-            console.log("verify access token succeed");
-            let user = await getUserByEmail(decoded?.email);
+    try {
+        const decoded = verify(
+            accessToken as string,
+            (process.env.publicKey as string).replace(/\\n/gm, "\n"),
+            { algorithms: ["RS256"] }
+        ) as JwtProps;
+        console.log("verify access token succeed");
+        console.log({
+            accessExpire: new Date((decoded?.exp || 1) * 1000).toLocaleString(),
+        });
+        let user = await getUserByEmail(decoded?.email);
 
-            if (!user) {
-                user = (await getUserById(decoded?.userId)) as UserType;
-            }
-
-            if (!user) {
-                return res.status(401).json({
-                    success: false,
-                    message: "Unauthorized user",
-                    signIn: false,
-                });
-            }
-
-            req["user"] = user;
-            next();
+        if (!user) {
+            user = (await getUserById(decoded?.userId)) as UserType;
         }
-    );
+
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "User not found in decoded value from accessToken",
+                signIn: false,
+            });
+        }
+
+        req["user"] = user;
+        next();
+    } catch (e) {
+        // }
+        // console.log(e);
+        return await RefreshToken(req, res, next);
+    }
 };

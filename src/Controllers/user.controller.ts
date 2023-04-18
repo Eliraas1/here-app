@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import { getMyProfile } from "../Services/user.service";
-import User, { UserType } from "../Models/User";
 
 export const GetMyProfile = async (
     req: Request,
@@ -18,6 +17,7 @@ export const GetMyProfile = async (
         const data = await getMyProfile(_id);
         return res.status(200).json({
             data,
+            refresh: req.refresh,
         });
     } catch (error: any) {
         next(error);

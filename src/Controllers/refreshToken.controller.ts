@@ -15,17 +15,20 @@ const RefreshToken = async (
 ) => {
     try {
         const { refreshToken } = req.cookies;
-        if (!refreshToken) return res.sendStatus(401);
+        if (!refreshToken)
+            return res.status(401).json({
+                success: false,
+                message: "There is no refreshToken cookie",
+                signIn: false,
+            });
         verify(
             refreshToken as string,
             (process.env.publicKey as string).replace(/\\n/gm, "\n"),
             async (err: any, decoded: any) => {
                 if (err) {
-                    //expired refresh token
-                    //TODO: remove cookies!
-                    return res.status(403).json({
+                    return res.status(401).json({
                         success: false,
-                        message: "Unauthorized user",
+                        message: "RefreshToken Expired!",
                         signIn: false,
                     });
                 }
@@ -45,12 +48,18 @@ const RefreshToken = async (
                 }
 
                 if (!user) {
-                    return res.status(403).json({
+                    return res.status(401).json({
                         success: false,
-                        message: "Unauthorized user",
+                        message:
+                            "User not found in decoded value from refreshToken",
                         signIn: false,
                     });
                 }
+                req["refresh"] = {
+                    accessToken,
+                    refreshToken: newRefreshToken,
+                    status: 201,
+                };
 
                 req["user"] = user;
                 res.cookie("accessToken", accessToken, {
@@ -58,7 +67,7 @@ const RefreshToken = async (
                     secure: false,
                     domain: process.env.COOKIE_DOMAIN || "localhost",
                     path: "/",
-                    sameSite: "none",
+                    // sameSite: "none",
                     expires: moment(new Date())
                         .utc(true)
                         .add(1, "hour")
@@ -68,12 +77,13 @@ const RefreshToken = async (
                     secure: false,
                     domain: process.env.COOKIE_DOMAIN || "localhost",
                     path: "/",
-                    sameSite: "none",
+                    // sameSite: "none",
                     expires: moment(new Date())
                         .utc(true)
                         .add(90, "days")
                         .toDate(),
                 });
+
                 console.log("done with refresh token");
                 return next();
             }

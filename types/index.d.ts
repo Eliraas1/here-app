@@ -5,6 +5,11 @@ declare global {
     namespace Express {
         interface Request {
             user?: any;
+            refresh: {
+                accessToken: string;
+                refreshToken: string;
+                status: number;
+            };
             // flash(): { [key: string]: string[] };
             // flash(message: string): string[];
             // flash(type: string, message: string[] | string): number;
