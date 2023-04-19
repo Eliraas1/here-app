@@ -234,7 +234,8 @@ const calcRest = (item: Data) => {
     // if (isNaN(part3)) console.log("---- part3 ---", salaryGrowRate, power);
     const a = (1 + discountRate[w - x]) ** 1;
     const b = (1 + discountRate[w - x - 1]) ** 1;
-    if (isNaN(a)) console.log("---- a ---", discountRate[w - x], w - x, x);
+    if (isNaN(a))
+        console.log("---- a ---", discountRate[w - x], w - x, x, item.מין);
     if (isNaN(b)) console.log("---- b ---", b);
 
     const sum = commonPart * (part1 + part2 + part3) + separatedPart;
@@ -244,15 +245,40 @@ const calcRest = (item: Data) => {
 
 const calcAll = (item: Data) => {
     // return calc1(item) + calc2(item) + calc3(item);
-    const gaga = calc1(item) + calc2(item) + calc3(item) + calcRest(item);
+    let sum = 0;
+    if (item.age > item.W) {
+        sum = item["שכר "] * item.seniority * (1 - (item["אחוז סעיף 14"] || 1));
+        return sum;
+    }
+
+    sum = calc1(item) + calc2(item) + calc3(item) + calcRest(item);
     // const gaga = calc1(item) + calc2(item) + calc3(item) + calcRest(item);
     // if (Number.isNaN(gaga))
     //     console.log("-----------------------------", item, gaga);
-    return gaga;
+    return sum;
     // return calcRest(item);
 };
 
-data.forEach((item, index) =>
-    // console.log(calcAll(item), { index: item.index, gaga: item["שווי נכס"] })
-    calcAll(item)
+const table: any = [];
+data.forEach(
+    (item, index) => {
+        table.push({
+            index: item.index,
+            salary: calcAll(item).toLocaleString(),
+        });
+    }
+    // (item, index) =>
+    //     console.log(calcAll(item), {
+    //         index: item.index,
+    //         gaga: item["שווי נכס"],
+    //     })
+    // calcAll(item)
 );
+// XLSX.utils.book_new()
+var filename = "write.xlsx";
+var ws_name = "results";
+var wb = XLSX.utils.book_new();
+var ws = XLSX.utils.json_to_sheet(table);
+XLSX.utils.book_append_sheet(wb, ws, ws_name);
+XLSX.writeFile(wb, filename);
+console.table(table);
