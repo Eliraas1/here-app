@@ -245,6 +245,7 @@ const calcRest = (item: Data) => {
 
 const calcAll = (item: Data) => {
     // return calc1(item) + calc2(item) + calc3(item);
+    //TODO check with anna if there is no section14 what to do...?
     let sum = 0;
     if (item.age > item.W) {
         sum = item["שכר "] * item.seniority * (1 - (item["אחוז סעיף 14"] || 1));
