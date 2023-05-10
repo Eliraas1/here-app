@@ -23,6 +23,7 @@ interface Data {
     seniority: number;
     W: 67 | 64;
     salaryGrowRate: number;
+    totalSalary: number;
 }
 interface Assuming {
     "עקום  שיעורי היוון": number;
@@ -61,16 +62,22 @@ const maleDeath: Death[] = XLSX.utils.sheet_to_json(maleDeathXL);
 const femaleDeath: Death[] = XLSX.utils.sheet_to_json(femaleDeathXL);
 const data = unFilterData.filter((item) => !item["תאריך עזיבה "]);
 const getAge = (item: Data) => {
-    const currentDate = moment();
+    const currentDate = moment("12-31-22");
     const birthDate = moment(item["תאריך לידה"]);
     const age = currentDate.diff(birthDate, "years"); //x
     return age;
 };
 const getSeniority = (item: Data) => {
-    const currentDate = moment();
+    const currentDate = moment("12-31-22");
     const startDate = moment(item["תאריך תחילת עבודה "]);
     const seniority = currentDate.diff(startDate, "years"); //x
     return seniority;
+};
+const getSectionSeniority = (item: Data) => {
+    const currentDate = moment();
+    const startDate = moment(item["תאריך  קבלת סעיף 14"]);
+    const sectionSeniority = currentDate.diff(startDate, "years"); //x
+    return sectionSeniority;
 };
 data.forEach((item: Data) => {
     //@ts-ignore
@@ -82,6 +89,15 @@ data.forEach((item: Data) => {
     const date = moment(item["תאריך תחילת עבודה "]);
     item.seniority = getSeniority(item);
     item.salaryGrowRate = index % 2 === 0 ? 0.04 : 0.02;
+    // check when did user get section14 and calc
+    const dada = item.seniority - getSectionSeniority(item);
+    const sal1 = dada * item["שכר "];
+    const sal2 = !item["אחוז סעיף 14"]
+        ? 0
+        : getSectionSeniority(item) * item["שכר "] * (1 - item["אחוז סעיף 14"]);
+    item.totalSalary = sal1 + sal2;
+    item.index === 1 &&
+        console.log(dada, sal1, sal2, getSectionSeniority(item), item);
 });
 
 const leaveProbability: LeaveProbability[] = [];
@@ -112,11 +128,6 @@ const fixedDiscountRate = () => {
 
 const discountRate = fixedDiscountRate();
 
-// const getPX = (t: number, item: Data) => {
-//     if (t <= 0) return 1;
-
-//     return 1 - getQ1(t, item) - getQ2(t, item) - getQ3(t, item);
-// };
 const getPX = (t: number, item: Data) => {
     if (t <= 0) return 1;
 
@@ -137,26 +148,22 @@ const getQ2 = (t: number, item?: Data) => {
 };
 const getQ3 = (t: number, item?: Data) => {
     if (!item) return 0;
-    const x = item.age;
     const death = item.מין === "M" ? maleDeath : femaleDeath;
-    const Lx = death.find((i) => i.age === x)?.["L(x)"];
-    const Ly = death.find((i) => i.age === t)?.["L(x)"];
-    if (!Lx || !Ly) return 0;
-    return (Lx - Ly) / Lx;
+    const Qx = death.find((i) => i.age === t + 1)?.["q(x)"];
+    item.index === 1 && console.log(t, item.age, Qx);
+    return Qx || 0;
 };
 
 const calc1 = (item: Data) => {
     const w = item.W;
     const x = item.age;
-    const lastSalary = item["שכר "];
-    const seniority = item.seniority;
-    const section14Rate = item["אחוז סעיף 14"] || 0;
-    const salaryGrowRate = item.salaryGrowRate;
+
     let sum = 0;
     for (let t = 0; t < w - x - 2; t++) {
         const _discountRate = discountRate[t];
+        const salaryGrowRate = t > 0 && t % 2 == 0 ? item.salaryGrowRate : 0;
         const power = t + 0.5;
-        const part1 = lastSalary * seniority * (1 - section14Rate);
+        const part1 = item.totalSalary;
         const part2 =
             ((1 + salaryGrowRate) ** power *
                 getPX(t + 1, item) *
@@ -169,15 +176,12 @@ const calc1 = (item: Data) => {
 const calc2 = (item: Data) => {
     const w = item.W;
     const x = item.age;
-    const lastSalary = item["שכר "];
-    const seniority = item.seniority;
-    const section14Rate = item["אחוז סעיף 14"] || 0;
-    const salaryGrowRate = item.salaryGrowRate;
     let sum = 0;
     for (let t = 0; t < w - x - 2; t++) {
         const power = t + 0.5;
         const _t = t + 1 + x;
-        const part1 = lastSalary * seniority * (1 - section14Rate);
+        const salaryGrowRate = t > 0 && t % 2 == 0 ? item.salaryGrowRate : 0;
+        const part1 = item.totalSalary;
         const part2 =
             ((1 + salaryGrowRate) ** power *
                 getPX(_t - x, item) *
@@ -205,25 +209,19 @@ const calcRest = (item: Data) => {
     const x = item.age;
     const power = w - x + 0.5;
     const power2 = power - 1;
-    const lastSalary = item["שכר "];
     const t = w - x - 1;
-    const seniority = item.seniority;
-    const section14Rate = item["אחוז סעיף 14"] || 0;
     const salaryGrowRate = item.salaryGrowRate;
     const assetsValue = item["שווי נכס"] || 0;
-    const commonPart = lastSalary * seniority * (1 - section14Rate) * 3;
+    const commonPart = item.totalSalary * 3;
     const discountRate1 = discountRate[w - x];
-    const discountRate2 = discountRate[w - x - 1];
     const part1 =
         ((1 + salaryGrowRate) ** power * getPX(t, item) * getQ1(w - 1, item)) /
         (1 + discountRate1) ** power;
-    // if (isNaN(part1)) console.log("---- part1 ---");
     const part2 =
         ((1 + salaryGrowRate) ** power2 *
             getPX(w - x - 1, item) *
             getQ3(w - 1, item)) /
         (1 + discountRate[w - x - 1]);
-    // if (isNaN(part2)) console.log("---- part2 ---");
     const separatedPart = assetsValue * getPX(t, item) * getQ2(w - 1, item);
     const part3 =
         ((1 + salaryGrowRate) ** (w - x) *
@@ -231,7 +229,6 @@ const calcRest = (item: Data) => {
             (1 - getPX(w - 1 - x, item))) /
         (1 + discountRate1) ** (w - x);
 
-    // if (isNaN(part3)) console.log("---- part3 ---", salaryGrowRate, power);
     const a = (1 + discountRate[w - x]) ** 1;
     const b = (1 + discountRate[w - x - 1]) ** 1;
     if (isNaN(a))
@@ -239,13 +236,10 @@ const calcRest = (item: Data) => {
     if (isNaN(b)) console.log("---- b ---", b);
 
     const sum = commonPart * (part1 + part2 + part3) + separatedPart;
-    // const sum = commonPart * (part1 + part2 + part3) + separatedPart;
     return sum;
 };
 
 const calcAll = (item: Data) => {
-    // return calc1(item) + calc2(item) + calc3(item);
-    //TODO check with anna if there is no section14 what to do...?
     let sum = 0;
     if (item.age > item.W) {
         sum = item["שכר "] * item.seniority * (1 - (item["אחוז סעיף 14"] || 1));
@@ -253,29 +247,16 @@ const calcAll = (item: Data) => {
     }
 
     sum = calc1(item) + calc2(item) + calc3(item) + calcRest(item);
-    // const gaga = calc1(item) + calc2(item) + calc3(item) + calcRest(item);
-    // if (Number.isNaN(gaga))
-    //     console.log("-----------------------------", item, gaga);
     return sum;
-    // return calcRest(item);
 };
 
 const table: any = [];
-data.forEach(
-    (item, index) => {
-        table.push({
-            index: item.index,
-            salary: calcAll(item).toLocaleString(),
-        });
-    }
-    // (item, index) =>
-    //     console.log(calcAll(item), {
-    //         index: item.index,
-    //         gaga: item["שווי נכס"],
-    //     })
-    // calcAll(item)
-);
-// XLSX.utils.book_new()
+data.forEach((item, index) => {
+    table.push({
+        index: item.index,
+        salary: calcAll(item).toLocaleString(),
+    });
+});
 var filename = "write.xlsx";
 var ws_name = "results";
 var wb = XLSX.utils.book_new();
