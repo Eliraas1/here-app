@@ -27,8 +27,14 @@ export const getListCategory = async (userId: string) => {
     const user = await User.findById(userId)
         .populate({
             path: "listCategories",
+            options: {
+                sort: { createdAt: -1 },
+            },
             populate: {
                 path: "lists",
+                options: {
+                    sort: { flag: -1, createdAt: -1 },
+                },
                 populate: {
                     path: "listItems",
                 },
@@ -38,6 +44,61 @@ export const getListCategory = async (userId: string) => {
     const categories = user?.listCategories;
     return categories;
 };
+export const getPrioritizedLists = async (userId: string) => {
+    const user = await User.findById(userId)
+        .populate({
+            path: "listCategories",
+            options: {
+                sort: { createdAt: -1 },
+            },
+            populate: {
+                path: "lists",
+                options: {
+                    sort: { flag: -1, createdAt: -1 },
+                },
+                populate: {
+                    path: "listItems",
+                },
+            },
+        })
+        .select("-password");
+    const categories = user?.listCategories;
+    const allLists = getAllListFromCategories(categories);
+    const prioritizeLists = prioritizeList(allLists);
+    return prioritizeLists;
+};
+
+const getAllListFromCategories = (categories?: ListCategoryType[]) => {
+    const newList: ListType[] = [];
+    if (!categories) return newList;
+    categories.forEach((category) => {
+        category.lists?.forEach((list) => {
+            const updatedList = {
+                _id: list._id,
+                title: list.title,
+                listItems: list.listItems,
+                flag: list.flag,
+                checkBoxListType: list.checkBoxListType,
+                createdAt: list.createdAt,
+                categoryId: category._id,
+            };
+            newList.push(updatedList as any);
+        });
+    });
+    return newList;
+};
+const prioritizeList = (listArray: ListType[]) => {
+    return listArray.sort((a, b) => {
+        if (a.flag && !b.flag) {
+            return -1;
+        }
+        if (!a.flag && b.flag) {
+            return 1;
+        }
+        return b.createdAt?.getTime() - a.createdAt?.getTime();
+    });
+};
+
 export const deleteListCategory = async (
     userId: string,
     categoryId: string
@@ -81,6 +142,14 @@ export const editListTitle = async (listId: string, title: string) => {
     const updatedList = await List.findByIdAndUpdate(
         listId,
         { title },
+        { new: true }
+    );
+    return updatedList;
+};
+export const editListFlag = async (listId: string, flag: boolean) => {
+    const updatedList = await List.findByIdAndUpdate(
+        listId,
+        { flag },
         { new: true }
     );
     return updatedList;

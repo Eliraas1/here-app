@@ -9,6 +9,8 @@ export interface ListType extends Document {
     flag?: boolean;
     listItems?: ListItemType[];
     checkBoxListType?: CheckBoxListType;
+    createdAt: Date;
+    categoryId?: string;
 }
 const ListSchema = new Schema(
     {

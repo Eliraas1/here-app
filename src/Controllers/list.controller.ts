@@ -11,6 +11,8 @@ import {
     editListCheckBoxType,
     addItemsToList,
     deleteItemInList,
+    editListFlag,
+    getPrioritizedLists,
 } from "../Services/list.service";
 import { NextFunction, Request, Response } from "express";
 
@@ -50,6 +52,28 @@ export const GetListCategory = async (
             });
         const { _id } = user;
         const data = await getListCategory(_id);
+        return res.status(200).json({
+            data,
+            refresh: req.refresh,
+        });
+    } catch (error: any) {
+        next(error);
+    }
+};
+export const GetPrioritizedLists = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const user = req["user"];
+        if (!user)
+            return res.status(400).json({
+                success: false,
+                message: "user not found or user is not logged in",
+            });
+        const { _id } = user;
+        const data = await getPrioritizedLists(_id);
         return res.status(200).json({
             data,
             refresh: req.refresh,
@@ -142,6 +166,30 @@ export const EditListTitle = async (
         const { title, id } = req.body;
         if (!title) return next(createError(400, "Title not provided"));
         const data = await editListTitle(id, title);
+        return res.status(200).json({
+            data,
+            refresh: req.refresh,
+        });
+    } catch (error: any) {
+        next(error);
+    }
+};
+export const EditListFlag = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const user = req["user"];
+        if (!user)
+            return res.status(400).json({
+                success: false,
+                message: "user not found or user is not logged in",
+            });
+        const { flag, id } = req.body;
+        if (typeof flag === "undefined")
+            return next(createError(400, "Flag not provided"));
+        const data = await editListFlag(id, flag);
         return res.status(200).json({
             data,
             refresh: req.refresh,
