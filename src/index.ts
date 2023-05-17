@@ -27,6 +27,7 @@ app.use(
         exposedHeaders: ["Set-Cookie"],
     })
 );
+
 app.use(cookieParser());
 app.use(json({ limit: "21mb" }));
 app.use(urlencoded({ extended: true, limit: "21mb" }));
