@@ -6,7 +6,7 @@ import userRouter from "./user.router";
 import listsRouter from "./list.router";
 
 const routes = Router();
-
+//
 routes.get("/", async (req, res) => {
     res.status(200).json({ data: "hello" });
 });
