@@ -113,6 +113,18 @@ export const deleteListCategory = async (
     await ListCategory.deleteOne({ _id: categoryId });
     return user;
 };
+export const deleteCategories = async (
+    userId: string,
+    categoryIds: string[]
+) => {
+    // Remove categories from the User model
+    await User.findByIdAndUpdate(
+        userId,
+        { $pull: { listCategories: { $in: categoryIds } } },
+        { new: true }
+    );
+    return await ListCategory.deleteMany({ _id: { $in: categoryIds } });
+};
 export const editListCategory = async (categoryId: string, name: string) => {
     const updatedCategory = await ListCategory.findByIdAndUpdate(
         categoryId,
