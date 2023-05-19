@@ -28,7 +28,7 @@ export const getListCategory = async (userId: string) => {
         .populate({
             path: "listCategories",
             options: {
-                sort: { createdAt: -1 },
+                sort: { createdAt: 1 },
             },
             populate: {
                 path: "lists",
