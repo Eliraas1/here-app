@@ -14,6 +14,7 @@ import {
     EditListFlag,
     GetPrioritizedLists,
     DeleteListCategories,
+    DeleteListsInCategories,
 } from "../Controllers/list.controller";
 
 const listsRouter = Router();
@@ -21,6 +22,7 @@ const listsRouter = Router();
 listsRouter.post("/list/category", AddListCategory);
 listsRouter.delete("/list/category/:id", DeleteListCategory);
 listsRouter.delete("/list/categories", DeleteListCategories);
+listsRouter.delete("/list", DeleteListsInCategories);
 listsRouter.get("/list/categories", GetListCategory);
 listsRouter.get("/list/prioritize", GetPrioritizedLists);
 listsRouter.put("/list/category", EditListCategory);

@@ -181,6 +181,9 @@ export const deleteList = async (listId: string) => {
     const deletedList = await List.deleteOne({ _id: listId });
     return deletedList;
 };
+export const deleteManyLists = async (listsId: string[]) => {
+    return await List.deleteMany({ _id: { $in: listsId } });
+};
 
 export const addItemsToList = async (
     listId: string,

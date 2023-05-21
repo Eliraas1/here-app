@@ -14,6 +14,7 @@ import {
     editListFlag,
     getPrioritizedLists,
     deleteCategories,
+    deleteManyLists,
 } from "../Services/list.service";
 import { NextFunction, Request, Response } from "express";
 
@@ -121,6 +122,29 @@ export const DeleteListCategories = async (
         const ids = req.body.ids;
         const { _id } = user;
         const data = await deleteCategories(_id, ids);
+        return res.status(200).json({
+            data,
+            refresh: req.refresh,
+        });
+    } catch (error: any) {
+        next(error);
+    }
+};
+export const DeleteListsInCategories = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const user = req["user"];
+        if (!user)
+            return res.status(400).json({
+                success: false,
+                message: "user not found or user is not logged in",
+            });
+        const ids = req.body.ids;
+        // const { _id } = user;
+        const data = await deleteManyLists(ids);
         return res.status(200).json({
             data,
             refresh: req.refresh,
