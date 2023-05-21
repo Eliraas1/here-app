@@ -61,6 +61,19 @@ export const getUserTasks = async (_id: string) => {
         throw new Error(error.message as string);
     }
 };
+export const getUserNextTask = async (_id: string, date?: Date) => {
+    try {
+        const closestTask: TaskType | null = await Task.findOne({
+            targetDate: { $gte: date || moment().toDate() }, // Get tasks with targetDate greater than or equal to current date and time
+        })
+            .sort("targetDate") // Sort the tasks by targetDate in ascending order
+            .limit(1); // Retrieve only the closest task
+
+        return closestTask;
+    } catch (error: any) {
+        throw new Error(error.message as string);
+    }
+};
 export const getUserTasksByDate = async (_id: string, date: string) => {
     try {
         const [day, month, year] = new Date(date)

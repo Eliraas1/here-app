@@ -6,6 +6,7 @@ import {
     getUserTasksByDate,
     editTask,
     getUserTaskById,
+    getUserNextTask,
 } from "../Services/task.service";
 import { BodyTaskType, Frequency, TaskType } from "../Models/Task";
 import moment from "moment";
@@ -108,6 +109,29 @@ export const GetUserTasks = async (
             });
         const { _id } = user;
         const data = await getUserTasks(_id);
+        return res.status(200).json({
+            data,
+            refresh: req.refresh,
+        });
+    } catch (error: any) {
+        next(error);
+    }
+};
+export const GetUserNextTask = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const user = req["user"];
+        if (!user)
+            return res.status(400).json({
+                success: false,
+                message: "user not found or user is not logged in",
+            });
+        const { _id } = user;
+        const { date } = req.body;
+        const data = await getUserNextTask(_id, date);
         return res.status(200).json({
             data,
             refresh: req.refresh,
