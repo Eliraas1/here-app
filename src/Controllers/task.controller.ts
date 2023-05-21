@@ -45,6 +45,7 @@ const addTaskByFrequency = async (task: BodyTaskType, id: string) => {
         return tasks;
     }
     const freq = task.frequency;
+
     const unit = freq.split(" ").at(-1) as Units;
     const amount = Frequency[freq];
     const targetDate = task.targetDate;

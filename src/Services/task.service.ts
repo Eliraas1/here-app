@@ -5,6 +5,11 @@ import User from "../Models/User";
 export const addTask = async (_id: string, task: TaskType) => {
     try {
         const user = await User.findOne({ _id });
+        const newDate = new Date(task?.targetDate || new Date());
+        const realDate = new Date(
+            newDate.getTime() + newDate.getTimezoneOffset() * 60000
+        );
+        task.targetDate = realDate;
         const newTask = new Task({
             ...task,
             user: _id,
@@ -63,8 +68,17 @@ export const getUserTasks = async (_id: string) => {
 };
 export const getUserNextTask = async (_id: string, date?: Date) => {
     try {
+        const _date = new Date(date || new Date());
+        const realDate = new Date(
+            _date.getTime() + _date.getTimezoneOffset() * 60000
+        );
         const closestTask: TaskType | null = await Task.findOne({
-            targetDate: { $gte: date || moment().toDate() }, // Get tasks with targetDate greater than or equal to current date and time
+            $and: [
+                { user: _id },
+                {
+                    targetDate: { $gte: realDate || moment().toDate() }, // Get tasks with targetDate greater than or equal to current date and time
+                },
+            ],
         })
             .sort("targetDate") // Sort the tasks by targetDate in ascending order
             .limit(1); // Retrieve only the closest task
@@ -76,7 +90,11 @@ export const getUserNextTask = async (_id: string, date?: Date) => {
 };
 export const getUserTasksByDate = async (_id: string, date: string) => {
     try {
-        const [day, month, year] = new Date(date)
+        const newDate = new Date(date);
+        const realDate = new Date(
+            newDate.getTime() + newDate.getTimezoneOffset() * 60000
+        );
+        const [day, month, year] = realDate
             .toLocaleDateString("default", {
                 month: "2-digit",
                 day: "2-digit",
@@ -91,7 +109,6 @@ export const getUserTasksByDate = async (_id: string, date: string) => {
             .set("hour", 23)
             .set("minute", 59)
             .set("second", 59);
-
         const tasks = await Task.find({
             user: _id,
             $and: [
