@@ -15,6 +15,7 @@ export const addTask = async (_id: string, task: TaskType) => {
             user: _id,
         });
         const savedTask = await newTask.save();
+
         user?.tasks?.push(savedTask);
         await user?.save();
         return savedTask;

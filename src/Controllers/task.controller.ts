@@ -39,6 +39,7 @@ export const AddTask = async (
 
 const addTaskByFrequency = async (task: BodyTaskType, id: string) => {
     const tasks: TaskType[] = [];
+    if (task._id) return editTask(id, task._id, task as TaskType);
     if (!task.frequency || task.frequency === "None") {
         const newTask = await addTask(id, task as TaskType);
         tasks.push(newTask);
@@ -59,7 +60,6 @@ const addTaskByFrequency = async (task: BodyTaskType, id: string) => {
 
     while (date1 <= date2) {
         const currentDate = date1.toDate(); // start date
-        // const currentDate = date1.clone().toDate(); // start date
         const updatedTask = { ...task, targetDate: currentDate } as TaskType;
         const newTask = await addTask(id, updatedTask);
         tasks.push(newTask);
