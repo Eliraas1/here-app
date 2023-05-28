@@ -1,6 +1,7 @@
 import { Schema, model, Document } from "mongoose";
 import { TaskType } from "./Task";
 import { ListCategoryType } from "./ListCategory";
+import { MessageType } from "./Message";
 export interface UserType extends Document {
     _id?: string;
     name: string;
@@ -8,6 +9,7 @@ export interface UserType extends Document {
     password: string;
     img?: string;
     tasks?: TaskType[];
+    messages?: MessageType[];
     listCategories: ListCategoryType[];
 }
 const UserSchema = new Schema(
@@ -32,6 +34,14 @@ const UserSchema = new Schema(
             {
                 type: Schema.Types.ObjectId,
                 ref: "Task",
+                required: false,
+                default: [],
+            },
+        ],
+        messages: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "Message",
                 required: false,
                 default: [],
             },
