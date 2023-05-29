@@ -4,6 +4,7 @@ import Task, { TaskType } from "../Models/Task";
 
 export const getSearchResult = async (userId: string, input: string) => {
     try {
+        if (!input) return { tasks: [], messages: [], lists: [] };
         //find tasks
         const taskQuery = {
             $or: [
@@ -35,13 +36,20 @@ export const getSearchResult = async (userId: string, input: string) => {
         ]);
         const [task, messages, lists] = result;
         const newTasks = task.map((res: any) => {
-            return { ...res._doc, data: { description: res.details } };
+            // return {
+            //     ...res._doc,
+            //     data: { title: res.name, description: res.details },
+            // };
+            return {
+                ...res._doc,
+                data: { title: res.name, description: res.targetDate },
+            };
         });
         const newMsg = messages.map((res: any) => {
             return {
                 ...res._doc,
                 data: {
-                    title: res.createdAt,
+                    name: res.createdAt,
                     description: res.message,
                 },
             };
@@ -50,7 +58,7 @@ export const getSearchResult = async (userId: string, input: string) => {
             return {
                 ...res._doc,
                 data: {
-                    title: res.categoryName,
+                    name: res.categoryName,
                     description: res.title,
                 },
             };
