@@ -44,6 +44,7 @@ export interface BodyTaskType {
     targetDate?: Date;
     endDate?: Date;
     isSetTime?: boolean;
+    note?: string;
 }
 const TaskSchema = new Schema(
     {
@@ -54,6 +55,11 @@ const TaskSchema = new Schema(
         details: {
             type: String,
             required: true,
+        },
+        note: {
+            type: String,
+            required: false,
+            default: "",
         },
         done: {
             type: Boolean,
@@ -83,5 +89,4 @@ const TaskSchema = new Schema(
     { timestamps: true }
 );
 
-// const formattedDate = moment(task.targetDate).format("MM/DD/YYYY");
 export default model<TaskType>("Task", TaskSchema);

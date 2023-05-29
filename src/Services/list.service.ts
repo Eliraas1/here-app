@@ -134,9 +134,14 @@ export const editListCategory = async (categoryId: string, name: string) => {
     return updatedCategory;
 };
 
-export const addListToCategory = async (categoryId: string, title: string) => {
+export const addListToCategory = async (
+    userId: string,
+    categoryId: string,
+    title: string
+) => {
     const newList = new List({
         title,
+        user: userId,
     });
     const savedList = await newList.save();
     const updatedCategory = await ListCategory.findByIdAndUpdate(
@@ -148,6 +153,8 @@ export const addListToCategory = async (categoryId: string, title: string) => {
         },
         { new: true }
     ).populate({ path: "lists" });
+
+    await savedList.updateOne({ categoryName: updatedCategory?.name });
     return updatedCategory;
 };
 export const editListTitle = async (listId: string, title: string) => {

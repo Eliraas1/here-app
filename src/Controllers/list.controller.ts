@@ -190,7 +190,7 @@ export const AddListToCategory = async (
             });
         const { title, id } = req.body;
         if (!title) return next(createError(400, "Title not provided"));
-        const data = await addListToCategory(id, title);
+        const data = await addListToCategory(user._id, id, title);
         return res.status(200).json({
             data,
             refresh: req.refresh,

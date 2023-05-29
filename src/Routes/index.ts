@@ -5,6 +5,7 @@ import taskRouter from "./task.router";
 import userRouter from "./user.router";
 import listsRouter from "./list.router";
 import messageRouter from "./message.router";
+import searchRouter from "./search.router";
 
 const routes = Router();
 //
@@ -17,4 +18,5 @@ routes.use("/user", authenticateAccessToken, userRouter);
 routes.use("/", authenticateAccessToken, taskRouter);
 routes.use("/", authenticateAccessToken, listsRouter);
 routes.use("/", authenticateAccessToken, messageRouter);
+routes.use("/", authenticateAccessToken, searchRouter);
 export default routes;

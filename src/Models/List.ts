@@ -9,8 +9,8 @@ export interface ListType extends Document {
     flag?: boolean;
     listItems?: ListItemType[];
     checkBoxListType?: CheckBoxListType;
+    categoryName?: string;
     createdAt: Date;
-    categoryId?: string;
 }
 const ListSchema = new Schema(
     {
@@ -26,6 +26,12 @@ const ListSchema = new Schema(
                 default: [],
             },
         ],
+        user: {
+            type: Schema.Types.ObjectId,
+            required: true,
+            ref: "User",
+        },
+
         flag: {
             type: Boolean,
             default: false,
@@ -34,6 +40,11 @@ const ListSchema = new Schema(
             type: String,
             required: false,
             default: "V",
+        },
+        categoryName: {
+            type: String,
+            required: false,
+            default: "",
         },
     },
     { timestamps: true }
