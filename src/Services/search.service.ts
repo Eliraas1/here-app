@@ -42,7 +42,7 @@ export const getSearchResult = async (userId: string, input: string) => {
             // };
             return {
                 ...res._doc,
-                data: { title: res.name, description: res.targetDate },
+                data: { name: res.name, description: res.targetDate },
             };
         });
         const newMsg = messages.map((res: any) => {
