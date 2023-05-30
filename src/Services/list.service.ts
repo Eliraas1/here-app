@@ -154,7 +154,10 @@ export const addListToCategory = async (
         { new: true }
     ).populate({ path: "lists" });
 
-    await savedList.updateOne({ categoryName: updatedCategory?.name });
+    await savedList.updateOne({
+        categoryName: updatedCategory?.name,
+        category: updatedCategory,
+    });
     return updatedCategory;
 };
 export const editListTitle = async (listId: string, title: string) => {

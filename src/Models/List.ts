@@ -10,6 +10,7 @@ export interface ListType extends Document {
     listItems?: ListItemType[];
     checkBoxListType?: CheckBoxListType;
     categoryName?: string;
+    category?: string;
     createdAt: Date;
 }
 const ListSchema = new Schema(
@@ -30,6 +31,11 @@ const ListSchema = new Schema(
             type: Schema.Types.ObjectId,
             required: true,
             ref: "User",
+        },
+        category: {
+            type: Schema.Types.ObjectId,
+            required: true,
+            ref: "ListCategory",
         },
 
         flag: {
