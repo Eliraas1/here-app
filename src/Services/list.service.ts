@@ -142,6 +142,7 @@ export const addListToCategory = async (
     const newList = new List({
         title,
         user: userId,
+        category: categoryId,
     });
     const savedList = await newList.save();
     const updatedCategory = await ListCategory.findByIdAndUpdate(
@@ -156,7 +157,6 @@ export const addListToCategory = async (
 
     await savedList.updateOne({
         categoryName: updatedCategory?.name,
-        category: updatedCategory,
     });
     return updatedCategory;
 };
