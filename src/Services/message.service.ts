@@ -3,7 +3,9 @@ import Message, { MessageType } from "../Models/Message";
 
 export const getUserMessages = async (_id: string) => {
     try {
-        const messages = await Message.find({ user: _id });
+        const messages = await Message.find({ user: _id }).sort({
+            createdAt: -1,
+        });
         return messages;
     } catch (error: any) {
         throw new Error(error.message as string);
