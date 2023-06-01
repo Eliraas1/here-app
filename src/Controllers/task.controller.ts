@@ -7,6 +7,7 @@ import {
     editTask,
     getUserTaskById,
     getUserNextTask,
+    getNotifiedTask,
 } from "../Services/task.service";
 import { BodyTaskType, Frequency, TaskType } from "../Models/Task";
 import moment from "moment";
@@ -202,6 +203,22 @@ export const EditTask = async (
         const values = req.body;
         const data = await editTask(user._id, taskId, values);
         // const data = await deleteTask(taskId);
+        return res.status(200).json({
+            data,
+            refresh: req.refresh,
+        });
+    } catch (error: any) {
+        next(error);
+    }
+};
+
+export const GetNotifiedTasks = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const data = await getNotifiedTask();
         return res.status(200).json({
             data,
             refresh: req.refresh,

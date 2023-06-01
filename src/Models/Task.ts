@@ -1,5 +1,6 @@
 import moment from "moment";
 import { Schema, model, Document } from "mongoose";
+import { UserType } from "./User";
 
 export enum Frequency {
     "Every day" = 1,
@@ -33,6 +34,8 @@ export interface TaskType extends Document {
     push?: boolean;
     targetDate?: Date;
     isSetTime?: boolean;
+    notified?: boolean;
+    user?: UserType;
 }
 export interface BodyTaskType {
     _id?: string;
@@ -81,6 +84,11 @@ const TaskSchema = new Schema(
             default: false,
         },
         push: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
+        notified: {
             type: Boolean,
             required: false,
             default: false,

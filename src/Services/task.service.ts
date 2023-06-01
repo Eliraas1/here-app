@@ -1,16 +1,19 @@
 import moment from "moment";
 import Task, { TaskType } from "../Models/Task";
-import User from "../Models/User";
+import User, { UserType } from "../Models/User";
+import { sendPushNotification } from "./firebase.service";
 
 export const addTask = async (_id: string, task: TaskType) => {
     try {
         const user = await User.findOne({ _id });
+        console.log({ a: task.targetDate });
         const newDate = new Date(task?.targetDate || new Date());
         const realDate = new Date(
-            newDate.getTime() + newDate.getTimezoneOffset() * 60000
+            newDate.getTime() + newDate.getTimezoneOffset() * 1
         );
         task.targetDate = realDate;
         const newTask = new Task({
+            notified: false,
             ...task,
             user: _id,
         });
@@ -128,5 +131,32 @@ export const deleteTask = async (_id: string) => {
         return task;
     } catch (error: any) {
         throw new Error(error.message as string);
+    }
+};
+
+export const getNotifiedTask = async () => {
+    const currentTime = new Date();
+    const realDate = new Date(
+        currentTime.getTime() - currentTime.getTimezoneOffset() * 60000
+    );
+    const ltDate = new Date(realDate);
+    ltDate.setMinutes(realDate.getMinutes() + 60);
+    try {
+        const tasks = await Task.find({
+            $and: [
+                { push: true },
+                { notified: false },
+                {
+                    targetDate: { $gte: realDate }, // Get tasks with targetDate greater than or equal to current date and time
+                },
+                {
+                    targetDate: { $lte: ltDate }, // Get tasks with targetDate less than or equal to current date and time
+                },
+            ],
+        }).populate("user");
+        tasks.forEach((task) => sendPushNotification(task.user, task));
+        return tasks;
+    } catch (error) {
+        console.error("Failed to fetch users:", error);
     }
 };

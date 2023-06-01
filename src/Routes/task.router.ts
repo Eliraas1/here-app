@@ -7,6 +7,7 @@ import {
     EditTask,
     GetUserTaskById,
     GetUserNextTask,
+    GetNotifiedTasks,
 } from "../Controllers/task.controller";
 
 const taskRouter = Router();
@@ -18,5 +19,6 @@ taskRouter.post("/tasks/nextTask", GetUserNextTask);
 taskRouter.post("/tasks/date", GetUserTasksByDate);
 taskRouter.put("/tasks/:id", EditTask);
 taskRouter.get("/task/:id", GetUserTaskById);
+// taskRouter.get("/task/notified", GetNotifiedTasks);
 
 export default taskRouter;
