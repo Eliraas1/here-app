@@ -11,6 +11,7 @@ export interface UserType extends Document {
     tasks?: TaskType[];
     messages?: MessageType[];
     listCategories: ListCategoryType[];
+    fcmToken: string[];
 }
 const UserSchema = new Schema(
     {
@@ -54,6 +55,11 @@ const UserSchema = new Schema(
                 default: [],
             },
         ],
+        fcmToken: {
+            type: [String],
+            required: false,
+            default: [],
+        },
     },
     { timestamps: true }
 );
