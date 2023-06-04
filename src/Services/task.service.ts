@@ -206,7 +206,10 @@ export const getNotifiedTask = async () => {
                     targetDate: { $lte: ltDate }, // Get tasks with targetDate less than or equal to current date and time
                 },
             ],
-        }).populate("user");
+        }).populate({
+            path: "user",
+            select: "-password", // Exclude the "password" field
+        });
         tasks.forEach((task) => sendNotification(task.user, task));
         return tasks;
     } catch (error) {

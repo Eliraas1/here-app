@@ -1,8 +1,9 @@
 import RefreshToken from "../Controllers/refreshToken.controller";
 import { Request, Response, NextFunction } from "express";
 import { JwtPayload, sign, verify, VerifyErrors } from "jsonwebtoken";
-import { UserType } from "../Models/User";
+import User, { UserType } from "../Models/User";
 import { getUserByEmail, getUserById } from "./user.service";
+import admin from "firebase-admin";
 interface JwtProps {
     email: string;
     userId: string;
@@ -42,6 +43,7 @@ export const authenticateAccessToken = async (
     res: Response,
     next: NextFunction
 ) => {
+    if (await firebaseAuthMiddleware(req, res, next)) return next();
     const accessToken = req.cookies["accessToken"] || "";
     // console.log(accessToken && accessToken.slice(10));
     if (!accessToken) {
@@ -82,5 +84,30 @@ export const authenticateAccessToken = async (
         // }
         // console.log(e);
         return await RefreshToken(req, res, next);
+    }
+};
+
+export const firebaseAuthMiddleware = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const { authorization } = req.headers;
+
+    if (!authorization || !authorization.startsWith("Bearer ")) {
+        return false;
+    }
+
+    const idToken = authorization.split("Bearer ")[1];
+
+    try {
+        const decodedToken = await admin.auth().verifyIdToken(idToken);
+        const user = await User.findOne({ email: decodedToken.email });
+        if (!user) return false;
+        req.user = user;
+        return true;
+    } catch (error) {
+        console.error("Error verifying ID token:", error);
+        return false;
     }
 };

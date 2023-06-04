@@ -12,6 +12,7 @@ import {
 } from "../Services/task.service";
 import { BodyTaskType, Frequency, TaskType } from "../Models/Task";
 import moment from "moment";
+import User from "../Models/User";
 
 type Units = moment.unitOfTime.DurationConstructor | undefined;
 

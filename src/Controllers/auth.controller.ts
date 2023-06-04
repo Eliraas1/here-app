@@ -13,6 +13,8 @@ import {
     generateRefreshToken,
 } from "../Services/jwtService";
 import moment from "moment";
+import admin from "firebase-admin";
+import { getOrCreateUserWithGoogle } from "../Services/firebase.service";
 
 export const signUp = async (
     req: Request,
@@ -133,6 +135,35 @@ export const Login = async (
         });
     }
 };
+export const LoginWithGmail = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { authorization } = req.headers;
+
+        if (!authorization || !authorization.startsWith("Bearer ")) {
+            return false;
+        }
+        const idToken = authorization.split("Bearer ")[1];
+        const user = getOrCreateUserWithGoogle(idToken);
+        if (!user) throw new Error("Couldn't get or create user with google");
+        return res.status(200).json({
+            success: true,
+            message: "Login with google success",
+            data: {
+                signIn: true,
+            },
+        });
+    } catch (error: any) {
+        return res.status(400).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
 export const Logout = async (
     req: Request,
     res: Response,

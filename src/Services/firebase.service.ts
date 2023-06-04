@@ -1,7 +1,11 @@
-import { TaskType } from "Models/Task";
-import { UserType } from "../Models/User";
+import { TaskType } from "../Models/Task";
+import User, { UserType } from "../Models/User";
 import admin from "firebase-admin";
 import axios from "axios";
+import crypto from "crypto";
+import { genSalt, hash } from "bcrypt";
+import { createUser } from "./user.service";
+import { createError } from "./error.services";
 
 interface INotification {
     title: string;
@@ -81,30 +85,22 @@ const SendPushNotification = (message: any, user?: UserType) => {
         .catch((error: any) => {
             console.log(error.message);
         });
-    // axios(config)
-    //   .then(async (response: any) => {
-    //     const results: [] = response.data.results;
-    //     const removedTokens = [];
-    //     results.forEach((res: any, i) => {
-    //       res.error
-    //         ? (console.log(
-    //             "Push Notification Failed With Error: " +
-    //               res.error +
-    //               "For fcm token:",
-    //             user.fcmToken[i]
-    //           ),
-    //           removedTokens.push(user.fcmToken[i]))
-    //         : console.log("Push Notification Send To", {
-    //             fcmToken: user.fcmToken[i],
-    //           });
-    //     });
-    //     removedTokens.length &&
-    //       (await this.userService.deleteFcmTokensByTokens(
-    //         user._id,
-    //         removedTokens
-    //       ));
-    //   })
-    //   .catch((error: any) => {
-    //     console.log(error.message);
-    //   });
+};
+
+export const getOrCreateUserWithGoogle = async (idToken: string) => {
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const { email } = decodedToken;
+    if (!email) throw createError(400, "Invalid email");
+    const user = await User.findOne({ email });
+    if (user) return user;
+    const name = email?.split("@")[0] || "Gregorian";
+    const password = crypto.randomBytes(16).toString("hex");
+    const salt = await genSalt();
+    const hashedPassword = await hash(password, salt);
+    const newUser = await createUser({
+        email,
+        password: hashedPassword,
+        name,
+    } as any);
+    return newUser;
 };
