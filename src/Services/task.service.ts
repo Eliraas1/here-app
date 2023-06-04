@@ -6,7 +6,6 @@ import { sendPushNotification } from "./firebase.service";
 export const addTask = async (_id: string, task: TaskType) => {
     try {
         const user = await User.findOne({ _id });
-        console.log({ a: task.targetDate });
         const newDate = new Date(task?.targetDate || new Date());
         const realDate = new Date(
             newDate.getTime() + newDate.getTimezoneOffset() * 1

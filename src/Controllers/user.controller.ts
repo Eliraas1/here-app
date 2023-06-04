@@ -37,7 +37,6 @@ export const SetFcmToken = async (
             });
         const { _id } = user;
         const { token } = req.body;
-        console.log(req.body);
         const data = await setFcmToken(_id, token);
         return res.status(200).json({
             data,
