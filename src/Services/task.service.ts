@@ -207,7 +207,7 @@ export const getNotifiedTask = async () => {
                 },
             ],
         }).populate("user");
-        // tasks.forEach((task) => sendPushNotification(task.user, task));
+        tasks.forEach((task) => sendPushNotification(task.user, task));
         return tasks;
     } catch (error) {
         console.error("Failed to fetch users:", error);
