@@ -6,7 +6,7 @@ import routes from "./Routes";
 import { errorHandling } from "./Services/error.services";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import { connectToFirebase } from "./config/firebase";
+// import { connectToFirebase } from "./config/firebase";
 const PORT = process.env.PORT || "3000";
 const connect = () => {
     mongoose.set("strictQuery", false);
@@ -36,6 +36,6 @@ app.use(routes);
 app.use(errorHandling);
 app.listen(PORT, () => {
     connect();
-    connectToFirebase();
+    // connectToFirebase();
     console.log(`Connected on port ${PORT}`);
 });
