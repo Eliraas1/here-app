@@ -158,43 +158,41 @@ export const deleteManyTasks = async (userId: string, ids: string[]) => {
 };
 
 export const getNotifiedTask = async () => {
-    const currentTime = new Date();
     const realDate = new Date(
-        currentTime.getTime() - currentTime.getTimezoneOffset() * 60000
+        new Date().toLocaleString("en", { timeZone: "israel" })
     );
-    var d = new Date();
-    var utcDate = new Date(
-        Date.UTC(
-            d.getUTCFullYear(),
-            d.getUTCMonth(),
-            d.getUTCDate(),
-            d.getUTCHours(),
-            d.getUTCMinutes(),
-            d.getUTCSeconds(),
-            d.getUTCMilliseconds()
-        )
-    );
-    var b = new Date(realDate);
-    var utcDate2 = new Date(
-        Date.UTC(
-            b.getUTCFullYear(),
-            b.getUTCMonth(),
-            b.getUTCDate(),
-            b.getUTCHours(),
-            b.getUTCMinutes(),
-            b.getUTCSeconds(),
-            b.getUTCMilliseconds()
-        )
-    );
+    // const realDate = new Date(
+    //     currentTime.getTime() - currentTime.getTimezoneOffset() * 60000
+    // );
+    // var d = new Date();
+    // var utcDate = new Date(
+    //     Date.UTC(
+    //         d.getUTCFullYear(),
+    //         d.getUTCMonth(),
+    //         d.getUTCDate(),
+    //         d.getUTCHours(),
+    //         d.getUTCMinutes(),
+    //         d.getUTCSeconds(),
+    //         d.getUTCMilliseconds()
+    //     )
+    // );
+    // var b = new Date(realDate);
+    // var utcDate2 = new Date(
+    //     Date.UTC(
+    //         b.getUTCFullYear(),
+    //         b.getUTCMonth(),
+    //         b.getUTCDate(),
+    //         b.getUTCHours(),
+    //         b.getUTCMinutes(),
+    //         b.getUTCSeconds(),
+    //         b.getUTCMilliseconds()
+    //     )
+    // );
     const ltDate = new Date(realDate);
     ltDate.setMinutes(realDate.getMinutes() + 60);
     console.log({
         ltDate,
         realDate,
-        currentTime,
-        utcDate,
-        utcDate2,
-        ad: new Date(new Date().toLocaleString("en", { timeZone: "israel" })),
     });
     try {
         const tasks = await Task.find({
