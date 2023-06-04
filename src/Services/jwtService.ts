@@ -93,7 +93,7 @@ export const firebaseAuthMiddleware = async (
     next: NextFunction
 ) => {
     const { authorization } = req.headers;
-
+    console.log(authorization);
     if (!authorization || !authorization.startsWith("Bearer ")) {
         return false;
     }
