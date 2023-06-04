@@ -160,7 +160,7 @@ export const deleteManyTasks = async (userId: string, ids: string[]) => {
 export const getNotifiedTask = async () => {
     const currentTime = new Date();
     const realDate = new Date(
-        currentTime.getTime() + currentTime.getTimezoneOffset() * 60000
+        currentTime.getTime() - currentTime.getTimezoneOffset() * 60000
     );
     const ltDate = new Date(realDate);
     console.log({ ltDate, realDate, currentTime });
@@ -178,7 +178,7 @@ export const getNotifiedTask = async () => {
                 },
             ],
         }).populate("user");
-        tasks.forEach((task) => sendPushNotification(task.user, task));
+        // tasks.forEach((task) => sendPushNotification(task.user, task));
         return tasks;
     } catch (error) {
         console.error("Failed to fetch users:", error);
