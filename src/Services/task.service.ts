@@ -160,7 +160,7 @@ export const deleteManyTasks = async (userId: string, ids: string[]) => {
 export const getNotifiedTask = async () => {
     const currentTime = new Date();
     const realDate = new Date(
-        currentTime.getTime() - currentTime.getTimezoneOffset() * 60000
+        currentTime.getTime() + currentTime.getTimezoneOffset() * 60000
     );
     const ltDate = new Date(realDate);
     console.log({ ltDate, realDate, currentTime });
