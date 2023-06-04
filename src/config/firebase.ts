@@ -1,6 +1,6 @@
 import { cert, initializeApp } from "firebase-admin/app";
 
-const config = process.env.FIREBASE_CONF as any;
+const config = process.env.FB_CONF as any;
 const credential = JSON.parse(config);
 credential.private_key = (process.env.FIREBASE_PRIVATE_KEY as string).replace(
     /\\n/g,
