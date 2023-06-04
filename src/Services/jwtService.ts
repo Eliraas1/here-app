@@ -93,7 +93,6 @@ export const firebaseAuthMiddleware = async (
     next: NextFunction
 ) => {
     const { authorization } = req.headers;
-    console.log(authorization);
     if (!authorization || !authorization.startsWith("Bearer ")) {
         return false;
     }
@@ -106,8 +105,8 @@ export const firebaseAuthMiddleware = async (
         if (!user) return false;
         req.user = user;
         return true;
-    } catch (error) {
-        console.error("Error verifying ID token:", error);
+    } catch (error: any) {
+        console.error("Error verifying ID token:", error.code);
         return false;
     }
 };
