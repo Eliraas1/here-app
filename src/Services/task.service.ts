@@ -1,7 +1,7 @@
 import moment from "moment";
 import Task, { TaskType } from "../Models/Task";
 import User, { UserType } from "../Models/User";
-import { sendPushNotification } from "./firebase.service";
+import { sendNotification, sendPushNotification } from "./firebase.service";
 
 export const addTask = async (_id: string, task: TaskType) => {
     try {
@@ -207,7 +207,7 @@ export const getNotifiedTask = async () => {
                 },
             ],
         }).populate("user");
-        tasks.forEach((task) => sendPushNotification(task.user, task));
+        tasks.forEach((task) => sendNotification(task.user, task));
         return tasks;
     } catch (error) {
         console.error("Failed to fetch users:", error);
