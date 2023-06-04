@@ -12,9 +12,13 @@ export const sendPushNotification = async (
 ) => {
     if (!user || !task) return;
     const deviceTokens = user.fcmToken;
-    const time = task.targetDate?.toLocaleTimeString();
-    const title = `משימה עוד לא הושלמה,${task.name}`;
-    const body = `יש לך עד השעה ${time}`;
+    const [hour, minutes] = task.targetDate
+        ?.toISOString()
+        .split("T")[1]
+        ?.split(":") || ["", ""];
+    const fixedHours = [hour, minutes].join(":");
+    const title = `המשימה ${task.name} עוד לא הושלמה`;
+    const body = `יש לך עד השעה ${fixedHours}`;
     const message = {
         tokens: deviceTokens,
         notification: {

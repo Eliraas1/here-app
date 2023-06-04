@@ -61,3 +61,17 @@ export const getMyProfile = async (_id: string) => {
         throw new Error(error.message as string);
     }
 };
+export const setFcmToken = async (_id: string, token: string) => {
+    try {
+        const user = await User.findOneAndUpdate(
+            { _id },
+            {
+                $addToSet: { fcmToken: token },
+            },
+            { new: true }
+        );
+        return user;
+    } catch (error: any) {
+        throw new Error(error.message as string);
+    }
+};

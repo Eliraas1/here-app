@@ -32,9 +32,18 @@ export const addOrEditMessage = async (_id: string, message: MessageType) => {
         throw new Error(error.message as string);
     }
 };
-export const deleteMessages = async (ids: string[]) => {
+export const deleteMessages = async (userId: string, ids: string[]) => {
     const deletedItems = await Message.deleteMany({
         _id: { $in: ids },
     });
+    const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        {
+            $pullAll: { messages: ids },
+        },
+        {
+            new: true,
+        }
+    );
     return deletedItems;
 };

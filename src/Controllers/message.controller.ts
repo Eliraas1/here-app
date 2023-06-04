@@ -65,7 +65,7 @@ export const DeleteMessages = async (
                 message: "user not found or user is not logged in",
             });
         const ids = req.body.ids;
-        const data = await deleteMessages(ids);
+        const data = await deleteMessages(user._id, ids);
         return res.status(200).json({
             data,
             refresh: req.refresh,

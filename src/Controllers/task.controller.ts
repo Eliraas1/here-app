@@ -8,6 +8,7 @@ import {
     getUserTaskById,
     getUserNextTask,
     getNotifiedTask,
+    deleteManyTasks,
 } from "../Services/task.service";
 import { BodyTaskType, Frequency, TaskType } from "../Models/Task";
 import moment from "moment";
@@ -165,6 +166,28 @@ export const GetUserTaskById = async (
         next(error);
     }
 };
+export const DeleteManyTasks = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const user = req["user"];
+        if (!user)
+            return res.status(400).json({
+                success: false,
+                message: "user not found or user is not logged in",
+            });
+        const taskIds = req.body.ids;
+        const data = await deleteManyTasks(user._id, taskIds);
+        return res.status(200).json({
+            data,
+            refresh: req.refresh,
+        });
+    } catch (error: any) {
+        next(error);
+    }
+};
 export const DeleteTask = async (
     req: Request,
     res: Response,
@@ -178,7 +201,7 @@ export const DeleteTask = async (
                 message: "user not found or user is not logged in",
             });
         const taskId = req.params.id;
-        const data = await deleteTask(taskId);
+        const data = await deleteTask(user._id, taskId);
         return res.status(200).json({
             data,
             refresh: req.refresh,
