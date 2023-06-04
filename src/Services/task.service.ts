@@ -163,6 +163,7 @@ export const getNotifiedTask = async () => {
         currentTime.getTime() - currentTime.getTimezoneOffset() * 60000
     );
     const ltDate = new Date(realDate);
+    console.log({ ltDate, realDate, currentTime });
     ltDate.setMinutes(realDate.getMinutes() + 60);
     try {
         const tasks = await Task.find({
