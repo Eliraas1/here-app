@@ -125,13 +125,37 @@ export const getUserTasksByDate = async (_id: string, date: string) => {
         throw new Error(error.message as string);
     }
 };
-export const deleteTask = async (_id: string) => {
+export const deleteTask = async (userId: string, _id: string) => {
     try {
         const task = await Task.findOneAndDelete({ _id });
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            {
+                $pull: { tasks: _id },
+            },
+            {
+                new: true,
+            }
+        );
         return task;
     } catch (error: any) {
         throw new Error(error.message as string);
     }
+};
+export const deleteManyTasks = async (userId: string, ids: string[]) => {
+    const deletedTasks = await Task.deleteMany({
+        _id: { $in: ids },
+    });
+    const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        {
+            $pullAll: { tasks: ids },
+        },
+        {
+            new: true,
+        }
+    );
+    return deletedTasks;
 };
 
 export const getNotifiedTask = async () => {
@@ -144,7 +168,7 @@ export const getNotifiedTask = async () => {
     try {
         const tasks = await Task.find({
             $and: [
-                { push: true },
+                // { push: true },
                 { notified: false },
                 {
                     targetDate: { $gte: realDate }, // Get tasks with targetDate greater than or equal to current date and time
