@@ -108,10 +108,8 @@ export const getUserTasksByDate = async (_id: string, date: string) => {
         //without this conversion, utc date can be 02-03 instead of 03-03, and we can get task with incorrect target date
         const fixedStringToConvert = `${year}-${month}-${day}`;
         const startDay = new Date(fixedStringToConvert);
-        const endDay = moment(startDay)
-            .set("hour", 23)
-            .set("minute", 59)
-            .set("second", 59);
+        const endDay = new Date(startDay);
+        endDay.setUTCHours(23, 59, 59, 59);
         const tasks = await Task.find({
             user: _id,
             $and: [
@@ -202,9 +200,9 @@ export const getNotifiedTask = async () => {
                 {
                     targetDate: { $gte: realDate }, // Get tasks with targetDate greater than or equal to current date and time
                 },
-                {
-                    targetDate: { $lte: ltDate }, // Get tasks with targetDate less than or equal to current date and time
-                },
+                // {
+                //     targetDate: { $lte: ltDate }, // Get tasks with targetDate less than or equal to current date and time
+                // },
             ],
         }).populate({
             path: "user",
