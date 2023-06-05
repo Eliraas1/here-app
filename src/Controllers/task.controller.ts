@@ -9,8 +9,9 @@ import {
     getUserNextTask,
     getNotifiedTask,
     deleteManyTasks,
+    insertManyTasksToUser,
 } from "../Services/task.service";
-import { BodyTaskType, Frequency, TaskType } from "../Models/Task";
+import Task, { BodyTaskType, Frequency, TaskType } from "../Models/Task";
 import moment from "moment";
 import User from "../Models/User";
 
@@ -63,12 +64,16 @@ const addTaskByFrequency = async (task: BodyTaskType, id: string) => {
 
     while (date1 <= date2) {
         const currentDate = date1.toDate(); // start date
-        const updatedTask = { ...task, targetDate: currentDate } as TaskType;
-        const newTask = await addTask(id, updatedTask);
-        tasks.push(newTask);
+        const updatedTask = {
+            ...task,
+            targetDate: currentDate,
+            user: id as any,
+        } as TaskType;
+        // const newTask = await addTask(id, updatedTask);
+        tasks.push(updatedTask);
         date1.add(amount, unit);
     }
-
+    const newTasks = await insertManyTasksToUser(id, tasks);
     return tasks;
 };
 export const GetUserTasksByDate = async (

@@ -214,3 +214,16 @@ export const getNotifiedTask = async () => {
         console.error("Failed to fetch users:", error);
     }
 };
+
+export const insertManyTasksToUser = async (
+    userId: string,
+    tasks: TaskType[]
+) => {
+    const newTasks = await Task.insertMany(tasks);
+    await User.findByIdAndUpdate(
+        userId,
+        { $addToSet: { tasks: newTasks } },
+        { new: true }
+    );
+    return newTasks;
+};
