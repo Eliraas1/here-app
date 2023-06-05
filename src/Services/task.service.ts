@@ -195,14 +195,14 @@ export const getNotifiedTask = async () => {
     try {
         const tasks = await Task.find({
             $and: [
-                // { push: true },
+                { push: true },
                 { notified: false },
                 {
                     targetDate: { $gte: realDate }, // Get tasks with targetDate greater than or equal to current date and time
                 },
-                // {
-                //     targetDate: { $lte: ltDate }, // Get tasks with targetDate less than or equal to current date and time
-                // },
+                {
+                    targetDate: { $lte: ltDate }, // Get tasks with targetDate less than or equal to current date and time
+                },
             ],
         }).populate({
             path: "user",
