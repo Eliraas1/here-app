@@ -171,10 +171,10 @@ export const Logout = async (
     next: NextFunction
 ) => {
     try {
-        const { accessToken, refreshToken } = req.cookies;
         const fcmToken = req.headers["x-fcmtoken"];
         const { user } = req;
         replaceFcmToken(user._id, fcmToken as string);
+        const { accessToken, refreshToken } = req.cookies;
         refreshToken &&
             res.clearCookie("refreshToken", {
                 httpOnly: true,
