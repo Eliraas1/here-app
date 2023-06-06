@@ -159,36 +159,9 @@ export const getNotifiedTask = async () => {
     const realDate = new Date(
         new Date().toLocaleString("en", { timeZone: "israel" })
     );
-    // const realDate = new Date(
-    //     currentTime.getTime() - currentTime.getTimezoneOffset() * 60000
-    // );
-    // var d = new Date();
-    // var utcDate = new Date(
-    //     Date.UTC(
-    //         d.getUTCFullYear(),
-    //         d.getUTCMonth(),
-    //         d.getUTCDate(),
-    //         d.getUTCHours(),
-    //         d.getUTCMinutes(),
-    //         d.getUTCSeconds(),
-    //         d.getUTCMilliseconds()
-    //     )
-    // );
-    // var b = new Date(realDate);
-    // var utcDate2 = new Date(
-    //     Date.UTC(
-    //         b.getUTCFullYear(),
-    //         b.getUTCMonth(),
-    //         b.getUTCDate(),
-    //         b.getUTCHours(),
-    //         b.getUTCMinutes(),
-    //         b.getUTCSeconds(),
-    //         b.getUTCMilliseconds()
-    //     )
-    // );
     const ltDate = new Date(realDate);
     const HOUR = 60;
-    ltDate.setMinutes(realDate.getMinutes() + 48 * HOUR);
+    ltDate.setMinutes(realDate.getMinutes() + 8 * HOUR);
     console.log({
         ltDate,
         realDate,

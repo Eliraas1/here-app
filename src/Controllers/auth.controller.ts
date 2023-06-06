@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import {
     createUser,
     getUserByEmail,
+    replaceFcmToken,
     updateUser,
 } from "../Services/user.service";
 import { genSalt, hash, compareSync, hashSync, compare } from "bcrypt";
@@ -171,7 +172,9 @@ export const Logout = async (
 ) => {
     try {
         const { accessToken, refreshToken } = req.cookies;
-
+        const fcmToken = req.headers["x-fcmtoken"];
+        const { user } = req;
+        replaceFcmToken(user._id, fcmToken as string);
         refreshToken &&
             res.clearCookie("refreshToken", {
                 httpOnly: true,
