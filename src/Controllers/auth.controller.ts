@@ -148,13 +148,18 @@ export const LoginWithGmail = async (
             return false;
         }
         const idToken = authorization.split("Bearer ")[1];
-        const user = getOrCreateUserWithGoogle(idToken);
+        const user = await getOrCreateUserWithGoogle(idToken);
         if (!user) throw new Error("Couldn't get or create user with google");
         return res.status(200).json({
             success: true,
             message: "Login with google success",
             data: {
                 signIn: true,
+                user: {
+                    _id: user._id,
+                    email: user.email,
+                    name: user.name,
+                },
             },
         });
     } catch (error: any) {
