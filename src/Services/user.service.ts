@@ -75,3 +75,42 @@ export const setFcmToken = async (_id: string, token: string) => {
         throw new Error(error.message as string);
     }
 };
+export const replaceFcmToken = async (
+    _id: string,
+    oldToken?: string,
+    newToken?: string
+) => {
+    try {
+        const user = await User.findById(_id);
+        if (!user) throw new Error("user not found");
+        const tokenIndex = user?.fcmToken.findIndex(
+            (token) => token === oldToken
+        );
+        if (!newToken) {
+            user.fcmToken = user.fcmToken.filter((token) => token !== oldToken);
+            await user.save();
+            return user;
+        }
+        const isTokenExist = user?.fcmToken.includes(newToken);
+        if (isTokenExist) throw new Error("token already exist");
+
+        if (~tokenIndex) {
+            if (!newToken) {
+                user.fcmToken = user.fcmToken.filter(
+                    (token) => token !== oldToken
+                );
+                await user.save();
+                return user;
+            }
+            user.fcmToken[tokenIndex] = newToken;
+            await user.save();
+            return user;
+        }
+        if (!newToken) return user;
+        user.fcmToken.push(newToken);
+        await user.save();
+        return user;
+    } catch (error: any) {
+        throw new Error(error.message as string);
+    }
+};
