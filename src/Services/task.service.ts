@@ -1,7 +1,7 @@
 import moment from "moment";
 import Task, { TaskType } from "../Models/Task";
 import User, { UserType } from "../Models/User";
-import { sendNotification, sendPushNotification } from "./firebase.service";
+import { sendNotification } from "./firebase.service";
 
 export const addTask = async (_id: string, task: TaskType) => {
     try {
@@ -187,7 +187,8 @@ export const getNotifiedTask = async () => {
     //     )
     // );
     const ltDate = new Date(realDate);
-    ltDate.setMinutes(realDate.getMinutes() + 60);
+    const HOUR = 60;
+    ltDate.setMinutes(realDate.getMinutes() + 48 * HOUR);
     console.log({
         ltDate,
         realDate,
@@ -195,6 +196,7 @@ export const getNotifiedTask = async () => {
     try {
         const tasks = await Task.find({
             $and: [
+                { done: false },
                 { push: true },
                 { notified: false },
                 {
@@ -203,6 +205,7 @@ export const getNotifiedTask = async () => {
                 {
                     targetDate: { $lte: ltDate }, // Get tasks with targetDate less than or equal to current date and time
                 },
+                // { user: "647eeb51561151606c2d9111" }, // eliran user
             ],
         }).populate({
             path: "user",
