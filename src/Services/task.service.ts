@@ -78,6 +78,7 @@ export const getUserNextTask = async (_id: string, date?: Date) => {
         const closestTask: TaskType[] | null = await Task.find({
             $and: [
                 { user: _id },
+                { done: false },
                 {
                     targetDate: { $gte: realDate || moment().toDate() }, // Get tasks with targetDate greater than or equal to current date and time
                 },
