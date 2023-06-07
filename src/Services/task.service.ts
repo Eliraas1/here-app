@@ -75,7 +75,7 @@ export const getUserNextTask = async (_id: string, date?: Date) => {
         const realDate = new Date(
             _date.getTime() + _date.getTimezoneOffset() * 60000
         );
-        const closestTask: TaskType | null = await Task.findOne({
+        const closestTask: TaskType[] | null = await Task.find({
             $and: [
                 { user: _id },
                 {
@@ -83,8 +83,8 @@ export const getUserNextTask = async (_id: string, date?: Date) => {
                 },
             ],
         })
-            .sort("targetDate") // Sort the tasks by targetDate in ascending order
-            .limit(1); // Retrieve only the closest task
+            .sort({ targetDate: "ascending" }) // Sort the tasks by targetDate in ascending order
+            .limit(2); // Retrieve only the closest task
 
         return closestTask;
     } catch (error: any) {

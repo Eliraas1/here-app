@@ -25,6 +25,15 @@ export const sendNotification = async (user?: UserType, task?: TaskType) => {
     const data = {
         registration_ids: user?.fcmToken,
         direct_boot_ok: true,
+        priority: "high",
+        android_channel_id: "Here - default",
+        channelId: "Here - default",
+        channel_id: "Here - default",
+        message: {
+            channelId: "Here - default",
+            channel_id: "Here - default",
+            android_channel_id: "Here - default",
+        },
         data: {
             body,
             title,

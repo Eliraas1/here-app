@@ -41,7 +41,8 @@ export const createUser = async (user: UserType) => {
             ...user,
             email: user.email.toLowerCase(),
         });
-        return await createdUser.save();
+        await createdUser.save();
+        return createdUser;
     } catch (error: any) {
         throw new Error(error.message as string);
     }
