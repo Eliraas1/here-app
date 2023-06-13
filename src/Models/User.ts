@@ -6,7 +6,7 @@ import { MessageType } from "./Message";
 export type Widgets =
     | "PlayGround | pizza"
     | "PlayGround | toggle"
-    | "Not stupid"
+    | "Im not stupid"
     | "Next task"
     | "Last message";
 export interface UserType extends Document {
