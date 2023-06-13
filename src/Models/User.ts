@@ -71,7 +71,7 @@ const UserSchema = new Schema(
         widgets: {
             type: [String],
             required: false,
-            default: ["Not stupid", "Next task"],
+            default: ["Im not stupid", "Next task"],
         },
     },
     { timestamps: true }
