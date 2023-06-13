@@ -2,6 +2,13 @@ import { Schema, model, Document } from "mongoose";
 import { TaskType } from "./Task";
 import { ListCategoryType } from "./ListCategory";
 import { MessageType } from "./Message";
+
+export type Widgets =
+    | "PlayGround | pizza"
+    | "PlayGround | toggle"
+    | "Not stupid"
+    | "Next task"
+    | "Last message";
 export interface UserType extends Document {
     _id?: string;
     name: string;
@@ -12,6 +19,7 @@ export interface UserType extends Document {
     messages?: MessageType[];
     listCategories: ListCategoryType[];
     fcmToken: string[];
+    widgets?: Widgets[];
 }
 const UserSchema = new Schema(
     {
@@ -59,6 +67,11 @@ const UserSchema = new Schema(
             type: [String],
             required: false,
             default: [],
+        },
+        widgets: {
+            type: [String],
+            required: false,
+            default: ["Not stupid", "Next task"],
         },
     },
     { timestamps: true }

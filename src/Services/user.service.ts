@@ -1,4 +1,4 @@
-import User, { UserType } from "../Models/User";
+import User, { UserType, Widgets } from "../Models/User";
 
 export const getUserByEmail = async (
     emailAddress: string,
@@ -61,6 +61,19 @@ export const getMyProfile = async (_id: string) => {
     } catch (error: any) {
         throw new Error(error.message as string);
     }
+};
+export const updateWidgets = async (_id: string, widgets: Widgets[]) => {
+    const user = await User.findOneAndUpdate(
+        { _id },
+        {
+            widgets,
+        },
+        {
+            new: true,
+        }
+    );
+    // console.log({ user });
+    return widgets;
 };
 export const setFcmToken = async (_id: string, token: string) => {
     try {
