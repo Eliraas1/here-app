@@ -89,6 +89,10 @@ export const setFcmToken = async (_id: string, token: string) => {
         throw new Error(error.message as string);
     }
 };
+export const getWidgets = async (_id: string) => {
+    const user = await User.findOne({ _id });
+    return user?.widgets;
+};
 export const replaceFcmToken = async (
     _id: string,
     oldToken?: string,
