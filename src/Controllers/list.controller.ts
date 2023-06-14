@@ -317,7 +317,7 @@ export const AddItems = async (
         const listId = req.body.listId;
         const items = req.body.items;
         const deleted = req.body.deleted;
-        const checkBoxListType = req.body.checkboxType;
+        const checkBoxListType = req.body.checkBoxListType;
         const data = await addItemsToList(
             listId,
             items,
