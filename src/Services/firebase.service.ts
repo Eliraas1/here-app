@@ -20,8 +20,8 @@ export const sendNotification = async (user?: UserType, task?: TaskType) => {
         .split("T")[1]
         ?.split(":") || ["", ""];
     const fixedHours = [hour, minutes].join(":");
-    const title = `Hey 👋 the task '${task.name}' has not completed yet`;
-    const body = `you have till ${fixedHours} ⏳`;
+    const title = `Are you Here?`;
+    const body = `${task.name}`;
     const data = {
         registration_ids: user?.fcmToken,
         direct_boot_ok: true,
