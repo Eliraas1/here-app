@@ -148,7 +148,11 @@ export const setNewUser = async (_id: string, list: OnBoardingList[]) => {
     if (list.includes("Lack of focus") || list.includes("Distractions")) {
         // playGround
         widgets.push("PlayGround | pizza");
-        if (list.length === 1) widgets.push("PlayGround | toggle");
+        if (
+            list.length === 1 ||
+            (list.includes("Lack of focus") && list.includes("Distractions"))
+        )
+            widgets.push("PlayGround | toggle");
     }
     if (
         list.includes("Time management") ||
