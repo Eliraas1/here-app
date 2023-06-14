@@ -210,7 +210,7 @@ export const addItemsToList = async (
     // deleted?.forEach((item) => deleteItemInList(item));
     deleteManyItemsInList(deleted);
     if (stack.length <= 0) throw new Error("must send items to list");
-    const updatedList = List.findByIdAndUpdate(
+    const updatedList = await List.findByIdAndUpdate(
         listId,
         {
             $addToSet: { listItems: { $each: stack } },
