@@ -198,7 +198,8 @@ export const deleteManyLists = async (listsId: string[]) => {
 export const addItemsToList = async (
     listId: string,
     items: ListItemTypeBody[],
-    deleted: ListItemTypeBody[]
+    deleted: ListItemTypeBody[],
+    checkBoxListType: CheckBoxListType
 ) => {
     const stack: string[] = [];
     for (let index = 0; index < items.length; index++) {
@@ -213,6 +214,7 @@ export const addItemsToList = async (
         listId,
         {
             $addToSet: { listItems: { $each: stack } },
+            checkBoxListType,
         },
         { new: true }
     );
