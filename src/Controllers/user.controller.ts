@@ -5,6 +5,7 @@ import {
     replaceFcmToken,
     updateWidgets,
     getWidgets,
+    setNewUser,
 } from "../Services/user.service";
 
 export const GetMyProfile = async (
@@ -114,6 +115,34 @@ export const GetWidgets = async (
             });
         const { _id } = user;
         const data = await getWidgets(_id);
+        return res.status(200).json({
+            data,
+            refresh: req.refresh,
+        });
+    } catch (error: any) {
+        next(error);
+    }
+};
+export const SetNewUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const user = req["user"];
+        if (!user)
+            return res.status(400).json({
+                success: false,
+                message: "user not found or user is not logged in",
+            });
+        const { list } = req.body;
+        if (list.length > 2)
+            return res.status(400).json({
+                success: false,
+                message: "user can choose up 2 words",
+            });
+        const { _id } = user;
+        const data = await setNewUser(_id, list);
         return res.status(200).json({
             data,
             refresh: req.refresh,

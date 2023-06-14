@@ -1,4 +1,4 @@
-import User, { UserType, Widgets } from "../Models/User";
+import User, { OnBoardingList, UserType, Widgets } from "../Models/User";
 
 export const getUserByEmail = async (
     emailAddress: string,
@@ -93,6 +93,7 @@ export const getWidgets = async (_id: string) => {
     const user = await User.findOne({ _id });
     return user?.widgets;
 };
+
 export const replaceFcmToken = async (
     _id: string,
     oldToken?: string,
@@ -131,4 +132,39 @@ export const replaceFcmToken = async (
     } catch (error: any) {
         throw new Error(error.message as string);
     }
+};
+
+export const setNewUser = async (_id: string, list: OnBoardingList[]) => {
+    // const user = await User.findOne({ _id });
+    const widgets: Widgets[] = [];
+    if (list.includes("Frustration") || list.includes("Feeling abnormal")) {
+        //stupid
+        widgets.push("Im not stupid");
+    }
+    if (list.includes("Self-expression") || list.includes("Feeling lonely")) {
+        //chat with my self
+        widgets.push("Last message");
+    }
+    if (list.includes("Lack of focus") || list.includes("Distractions")) {
+        // playGround
+        widgets.push("PlayGround | pizza");
+        if (list.length === 1) widgets.push("PlayGround | toggle");
+    }
+    if (
+        list.includes("Time management") ||
+        list.includes("Priorities") ||
+        list.includes("Confusion") ||
+        list.includes("Unorganized")
+    ) {
+        //next task
+        widgets.push("Next task");
+    }
+    return await User.findByIdAndUpdate(
+        _id,
+        {
+            widgets,
+            isNewUser: false,
+        },
+        { new: true }
+    );
 };

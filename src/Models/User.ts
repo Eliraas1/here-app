@@ -20,7 +20,20 @@ export interface UserType extends Document {
     listCategories: ListCategoryType[];
     fcmToken: string[];
     widgets?: Widgets[];
+    isNewUser?: boolean;
 }
+export type OnBoardingList =
+    | "Time management"
+    | "Confusion"
+    | "Unorganized"
+    | "Lack of focus"
+    | "Self-expression"
+    | "Priorities"
+    | "Feeling lonely"
+    | "Distractions"
+    | "Feeling abnormal"
+    | "Frustration";
+
 const UserSchema = new Schema(
     {
         name: {
@@ -72,6 +85,11 @@ const UserSchema = new Schema(
             type: [String],
             required: false,
             default: ["Im not stupid", "Next task"],
+        },
+        isNewUser: {
+            type: Boolean,
+            required: false,
+            default: true,
         },
     },
     { timestamps: true }

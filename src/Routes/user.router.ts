@@ -4,6 +4,7 @@ import {
     RefreshFcmToken,
     UpdateWidgets,
     GetWidgets,
+    SetNewUser,
 } from "../Controllers/user.controller";
 import { Router } from "express";
 
@@ -14,5 +15,6 @@ userRouter.post("/fcmToken", SetFcmToken);
 userRouter.post("/refreshFcm", RefreshFcmToken);
 userRouter.put("/widgets", UpdateWidgets);
 userRouter.get("/widgets", GetWidgets);
+userRouter.post("/setNewUser", SetNewUser);
 
 export default userRouter;
