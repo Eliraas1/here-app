@@ -123,6 +123,22 @@ export const deleteCategories = async (
         { $pull: { listCategories: { $in: categoryIds } } },
         { new: true }
     );
+    const userCategories = await ListCategory.find({
+        _id: { $in: categoryIds },
+    });
+    const listsIds: string[] = [];
+    const listItemsIds: string[] = [];
+
+    userCategories.forEach((category) => {
+        category.lists?.forEach((list) => {
+            list._id && listsIds.push(list._id);
+            list.listItems?.forEach((listItem) => {
+                listItem._id && listItemsIds.push(listItem._id);
+            });
+        });
+    });
+    await ListItem.deleteMany({ _id: { $in: listItemsIds } });
+    await List.deleteMany({ _id: { $in: listsIds } });
     return await ListCategory.deleteMany({ _id: { $in: categoryIds } });
 };
 export const editListCategory = async (categoryId: string, name: string) => {
