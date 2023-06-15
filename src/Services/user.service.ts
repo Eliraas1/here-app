@@ -163,6 +163,8 @@ export const setNewUser = async (_id: string, list: OnBoardingList[]) => {
         //next task
         widgets.push("Next task");
     }
+    if (widgets.length === 0) widgets.push("Im not stupid");
+
     return await User.findByIdAndUpdate(
         _id,
         {
