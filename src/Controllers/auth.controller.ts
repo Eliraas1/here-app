@@ -84,7 +84,7 @@ export const Login = async (
                 message: "Invalid email or password",
             });
 
-        const { password, _id, email, name, tasks } = user;
+        const { password, _id, email, name, tasks, isNewUser } = user;
         const accessToken = generateAccessToken({
             email,
             userId: _id as string,
@@ -126,6 +126,7 @@ export const Login = async (
                         name,
                         tasks,
                     },
+                    isNewUser,
                     signIn: true,
                 },
             });
@@ -160,6 +161,7 @@ export const LoginWithGmail = async (
                     email: user.email,
                     name: user.name,
                 },
+                isNewUser: user.isNewUser,
             },
         });
     } catch (error: any) {
