@@ -125,7 +125,7 @@ export const deleteCategories = async (
     );
     const userCategories = await ListCategory.find({
         _id: { $in: categoryIds },
-    });
+    }).populate("lists");
     const listsIds: string[] = [];
     const listItemsIds: string[] = [];
 
