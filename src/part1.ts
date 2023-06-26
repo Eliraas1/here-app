@@ -1,9 +1,7 @@
 import * as XLSX from "xlsx";
-// import * as fs from "fs";
 import moment from "moment";
-import { Console } from "console";
-//TODO: salary grow date 30/06/23
-interface Data {
+
+export interface Data {
     index: number;
     "שם ": string | undefined;
     "שם משפחה": string | undefined;
@@ -20,24 +18,32 @@ interface Data {
     "השלמה בצ'ק": number | undefined;
     "סיבת עזיבה": "פיטורין" | "התפטרות" | undefined;
     age: number;
+    openingBalanceAssets: number;
+    openingBalanceCommitment: number;
+    actuaryFactor: number;
+    partialYearSeniority: number;
+    workerFlowCost: number;
     seniority: number;
     W: 67 | 64;
+    discountRateCost: number;
+    benefitsPaid: number;
     salaryGrowRate: number;
+    actuarialProfitAndLoss: number;
     totalSalary: number;
 }
-interface Assuming {
+export interface Assuming {
     "עקום  שיעורי היוון": number;
     "הסתברויות עזיבה": string;
     __EMPTY_3: number;
     __EMPTY_4: number;
 }
-interface LeaveProbability {
+export interface LeaveProbability {
     min: number;
     max: number;
     התפטרות: number;
     פיטורין: number;
 }
-interface Death {
+export interface Death {
     age: number;
     "L(x)": number;
     "d(x)": number;
@@ -57,10 +63,23 @@ const femaleDeathXL = deathXL.Sheets["נשים"];
 const unFilterData: Data[] = XLSX.utils.sheet_to_json(dateXL, {
     range: 1,
 });
+
+// ----------------------------------------------------------------
+const openingRestData = read("./opening_rest.xlsx");
+const openBalanceSheet = openingRestData.Sheets["Sheet1"];
+const openBalanceData: any[] = XLSX.utils.sheet_to_json(openBalanceSheet);
+const commitment = openBalanceData.map((sheet) => sheet["data 8"]);
+const assets = openBalanceData.map((sheet) => sheet["__EMPTY_25"]);
+const getBalances = (index: number) => {
+    return { commitment: commitment[index - 1], assets: assets[index - 1] };
+    // const indexes = openBalanceData.map((sheet) => sheet["__EMPTY_27"]);
+};
+// ----------------------------------------------------------------
 const assuming: Assuming[] = XLSX.utils.sheet_to_json(assumingXL);
 const maleDeath: Death[] = XLSX.utils.sheet_to_json(maleDeathXL);
 const femaleDeath: Death[] = XLSX.utils.sheet_to_json(femaleDeathXL);
-const data = unFilterData.filter((item) => !item["תאריך עזיבה "]);
+const data = unFilterData;
+// const data = unFilterData.filter((item) => !item["תאריך עזיבה "]);
 const dateStr = "31/12/2022";
 const currentDate = moment(dateStr, "DD/MM/YYYY");
 const getAge = (item: Data) => {
@@ -92,6 +111,9 @@ data.forEach((item: Data) => {
     // const date = moment(item["תאריך תחילת עבודה "]);
     item.seniority = getSeniority(item);
     item.salaryGrowRate = index % 2 === 0 ? 0.04 : 0.02;
+    const balance = getBalances(index);
+    item.openingBalanceAssets = balance.assets;
+    item.openingBalanceCommitment = balance.commitment;
     // check when did user get section14 and calc
     // const dada = item.seniority - getSectionSeniority(item);
     const dada = item.seniority - getSectionSeniority(item);
@@ -101,9 +123,6 @@ data.forEach((item: Data) => {
         : getSectionSeniority(item) * item["שכר "] * (1 - item["אחוז סעיף 14"]);
 
     item.totalSalary = sal1 + sal2;
-    // item.index === 1 &&
-    //     console.log(dada, sal1, sal2, getSectionSeniority(item), item);
-    // console.log(item["אחוז סעיף 14"]);
 });
 
 const leaveProbability: LeaveProbability[] = [];
@@ -132,24 +151,24 @@ const fixedDiscountRate = () => {
     return arr;
 };
 
-const discountRate = fixedDiscountRate();
+export const discountRate = fixedDiscountRate();
 
-const getPX = (t: number, item: Data) => {
+export const getPX = (t: number, item: Data) => {
     if (t <= 0) return 1;
     const _t = t + item.age;
     return 1 - getQ1(_t) - getQ2(_t) - getQ3(_t, item);
 };
-const getQ1 = (t: number) => {
+export const getQ1 = (t: number) => {
     const index = getIndexOfProbability(t);
     const probabilityItem = leaveProbability[index];
     return probabilityItem.פיטורין;
 };
-const getQ2 = (t: number) => {
+export const getQ2 = (t: number) => {
     const index = getIndexOfProbability(t);
     const probabilityItem = leaveProbability[index];
     return probabilityItem.התפטרות;
 };
-const getQ3 = (t: number, item?: Data) => {
+export const getQ3 = (t: number, item?: Data) => {
     if (!item) return 0;
     const death = item.מין === "M" ? maleDeath : femaleDeath;
     const Qx = death.find((i) => i.age === t)?.["q(x)"];
@@ -261,6 +280,9 @@ data.forEach((item, index) => {
         salary: calcAll(item).toLocaleString(),
     });
 });
+
+export { table, read, data };
+
 // var filename = "write.xlsx";
 // var ws_name = "results";
 // var wb = XLSX.utils.book_new();
@@ -268,5 +290,5 @@ data.forEach((item, index) => {
 // XLSX.utils.book_append_sheet(wb, ws, ws_name);
 // XLSX.writeFile(wb, filename);
 // console.table(table);
-console.table(assuming);
-console.log(discountRate[discountRate.length - 1]);
+// console.table(assuming);
+// console.log(discountRate[discountRate.length - 1]);
