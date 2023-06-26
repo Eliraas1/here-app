@@ -30,6 +30,8 @@ export interface Data {
     salaryGrowRate: number;
     actuarialProfitAndLoss: number;
     totalSalary: number;
+    expectedAssetsReturn: number;
+    assetsProfitsAndLoss: number;
 }
 export interface Assuming {
     "עקום  שיעורי היוון": number;
