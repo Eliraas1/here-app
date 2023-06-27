@@ -3,10 +3,8 @@ import {
     createUser,
     getUserByEmail,
     replaceFcmToken,
-    updateUser,
 } from "../Services/user.service";
-import { genSalt, hash, compareSync, hashSync, compare } from "bcrypt";
-import User, { UserType } from "../Models/User";
+import { genSalt, hash, compare } from "bcrypt";
 import { createError } from "../Services/error.services";
 import { validateLoginSchema } from "../Validations/ValidateAuthSchema";
 import {
@@ -14,7 +12,6 @@ import {
     generateRefreshToken,
 } from "../Services/jwtService";
 import moment from "moment";
-import admin from "firebase-admin";
 import { getOrCreateUserWithGoogle } from "../Services/firebase.service";
 
 export const signUp = async (
@@ -197,6 +194,45 @@ export const Logout = async (
         return res
             .status(200)
             .json({ success: true, message: "logout successfully" });
+    } catch (error: any) {
+        next(createError(400, error));
+    }
+};
+
+// just for play store uses
+export const DeleteUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const result = validateLoginSchema(req.body);
+        if (result.error)
+            return res
+                .status(400)
+                .json({ success: false, message: result.error.message });
+
+        const user = await getUserByEmail(result.value.email);
+        if (!user)
+            return res.status(400).json({
+                success: false,
+                message: "Invalid email or password",
+            });
+
+        const match = await compare(result.value.password, user.password);
+
+        if (!match)
+            return res.status(400).json({
+                success: false,
+                message: "Invalid email or password",
+            });
+
+        const deletedUser = await user.deleteOne();
+        return res.status(200).json({
+            success: true,
+            message: "deleted successfully",
+            data: deletedUser,
+        });
     } catch (error: any) {
         next(createError(400, error));
     }
