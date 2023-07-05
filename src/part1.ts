@@ -98,7 +98,7 @@ const getSeniority = (item: Data) => {
 };
 const getSectionSeniority = (item: Data) => {
     // const currentDate = moment();
-    if (item["תאריך עזיבה "]) return 1;
+    // if (item["תאריך עזיבה "]) return 1;
     const startDate = moment(item["תאריך  קבלת סעיף 14"]);
     const sectionSeniority = currentDate.diff(startDate, "years"); //x
     return sectionSeniority;

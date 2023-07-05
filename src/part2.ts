@@ -18,10 +18,11 @@ const parseStringToNumber = (item: string) => {
 };
 
 const calcFactorActuary = (item: Data) => {
+    if (item["תאריך עזיבה "]) return 1;
     if (!item.openingBalanceCommitment) return 0;
     const index = item.index - 1;
-    const dada = parseFloat(table[index]?.salary?.replace(",", ""));
-
+    const dada = item.index === 143 ? 18188 : 0;
+    // const dada =parseFloat(table[index]?.salary?.replace(",", ""));
     const gaga =
         item["שכר "] * item.seniority * (1 - (item["אחוז סעיף 14"] || 0));
 
@@ -30,7 +31,8 @@ const calcFactorActuary = (item: Data) => {
 const getPartialYearSeniority = (item: Data) => {
     if (!item["תאריך עזיבה "]) return 1;
     const fixedDate = moment(item["תאריך עזיבה "]);
-    return fixedDate.diff(currentDate) / 365.25;
+    fixedDate.set("year", 2022);
+    return fixedDate.diff(currentDate, "day") / 365.25;
 };
 
 // calc 1
@@ -42,6 +44,7 @@ const calcWorkerFlowCost = (item: Data) => {
         item.partialYearSeniority *
         (1 - fourteenPercent) *
         item.actuaryFactor;
+
     return workerFlowCost;
 };
 
@@ -95,7 +98,9 @@ const getDiscountRateCost = (item: Data) => {
 //הפסדים רווחים אקטואריים
 const getActuarialProfitsAndLoss = (item: Data) => {
     const index = item.index - 1;
-    const compensation = parseFloat(table[index]?.salary?.replace(",", ""));
+    const compensation = item.index === 143 ? 18188 : 0;
+    // const compensation =
+    //          parseFloat(table[index]?.salary?.replace(",", ""));
 
     const value =
         compensation -
@@ -166,7 +171,8 @@ data.forEach((item) => {
         "עלות היוון": item.discountRateCost,
         "הטבות ששולמו": item.benefitsPaid,
         "הפסד אקטוארי": item.actuarialProfitAndLoss,
-        "יתרת סגירה": table[index - 1]?.salary,
+        "יתרת סגירה": 0,
+        // "יתרת סגירה": table[index - 1]?.salary,
         "פקטור אקטוארי": item.actuaryFactor,
     };
     const assets = {
@@ -183,14 +189,21 @@ data.forEach((item) => {
 });
 
 //TODO: EXCEL WITH DATA, table to assets, table to commitment
+const createTables = (xlType: "commitment" | "assets") => {
+    var filename = `part2_result_${xlType}.xlsx`;
+    var ws_name = "results";
+    var wb = XLSX.utils.book_new();
+    var ws = XLSX.utils.json_to_sheet(
+        xlType === "assets" ? excelDataAssets : excelDataCommitment
+    );
+    XLSX.utils.book_append_sheet(wb, ws, ws_name);
+    XLSX.writeFile(wb, filename);
+};
 
-var filename = "part2_result.xlsx";
-var ws_name = "results";
-var wb = XLSX.utils.book_new();
-var ws = XLSX.utils.json_to_sheet(excelDataAssets);
-XLSX.utils.book_append_sheet(wb, ws, ws_name);
-XLSX.writeFile(wb, filename);
-// var filename = "part2_result.xlsx";
+createTables("assets");
+createTables("commitment");
+
+// var filename = "part2_commitment.xlsx";
 // var ws_name = "results";
 // var wb = XLSX.utils.book_new();
 // var ws = XLSX.utils.json_to_sheet(excelDataCommitment);
