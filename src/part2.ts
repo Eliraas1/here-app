@@ -54,6 +54,18 @@ const getDiscountRate = (item: Data) => {
         value += getPX(i, item) ** i;
     }
     const fixedValue = Math.round(value);
+    // item.index === 64 &&
+    //     console.log(
+    //         // (item.הפקדות || 0) - item.benefitsPaid,
+    //         // item.הפקדות,
+    //         // item.benefitsPaid,
+    //         // item["שם "],
+    //         // item["תשלום מהנכס"],
+    //         // item["השלמה בצ'ק"],
+    //         // discountRate,
+    //         // ((item.הפקדות || 0) - item.benefitsPaid) * (discountRate / 2),
+    //         { age, w }
+    //     );
     return discountRate[fixedValue];
 };
 
@@ -110,7 +122,8 @@ const getExpectedAssetsReturn = (item: Data) => {
 // calc5
 // רווחים הפסדים אקטואריים - נכסים
 const getAssetsProfitsAndLoss = (item: Data) => {
-    const assetsValueClosed = item["שווי נכס"] || 0;
+    const assetsValueClosed = item["תאריך עזיבה "] ? 0 : item["שווי נכס"] || 0;
+
     const value =
         assetsValueClosed -
         item.openingBalanceAssets -
@@ -129,6 +142,16 @@ data.forEach((item) => {
     item.partialYearSeniority = getPartialYearSeniority(item);
     item.workerFlowCost = calcWorkerFlowCost(item);
     item.benefitsPaid = getBenefitsPaid(item);
+    // item.index === 64 &&
+    //     console.log(
+    //         // (item.הפקדות || 0) - item.benefitsPaid,
+    //         item.הפקדות,
+    //         item.benefitsPaid,
+    //         item["שם "],
+    //         item["תשלום מהנכס"],
+    //         item["השלמה בצ'ק"],
+    //         { pp: getBenefitsPaid(item) }
+    //     );
     item.discountRateCost = getDiscountRateCost(item);
     item.actuarialProfitAndLoss = getActuarialProfitsAndLoss(item);
     item.expectedAssetsReturn = getExpectedAssetsReturn(item);
@@ -153,7 +176,7 @@ data.forEach((item) => {
         הפקדות: item.הפקדות,
         "הטבות ששולמו מהנכסים": item.benefitsPaid,
         "רווח אקטוארי": item.assetsProfitsAndLoss,
-        "יתרת סגירה": item["שווי נכס"],
+        "יתרת סגירה": item["תאריך עזיבה "] ? 0 : item["שווי נכס"],
     };
     excelDataCommitment.push(commitment);
     excelDataAssets.push(assets);
