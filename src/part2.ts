@@ -21,7 +21,7 @@ const calcFactorActuary = (item: Data) => {
     if (item["תאריך עזיבה "]) return 1;
     if (!item.openingBalanceCommitment) return 0;
     const index = item.index - 1;
-    const dada = item.index === 143 ? 18188 : 0;
+    const dada = 0;
     // const dada =parseFloat(table[index]?.salary?.replace(",", ""));
     const gaga =
         item["שכר "] * item.seniority * (1 - (item["אחוז סעיף 14"] || 0));
@@ -57,18 +57,6 @@ const getDiscountRate = (item: Data) => {
         value += getPX(i, item) ** i;
     }
     const fixedValue = Math.round(value);
-    // item.index === 64 &&
-    //     console.log(
-    //         // (item.הפקדות || 0) - item.benefitsPaid,
-    //         // item.הפקדות,
-    //         // item.benefitsPaid,
-    //         // item["שם "],
-    //         // item["תשלום מהנכס"],
-    //         // item["השלמה בצ'ק"],
-    //         // discountRate,
-    //         // ((item.הפקדות || 0) - item.benefitsPaid) * (discountRate / 2),
-    //         { age, w }
-    //     );
     return discountRate[fixedValue];
 };
 
@@ -147,16 +135,6 @@ data.forEach((item) => {
     item.partialYearSeniority = getPartialYearSeniority(item);
     item.workerFlowCost = calcWorkerFlowCost(item);
     item.benefitsPaid = getBenefitsPaid(item);
-    // item.index === 64 &&
-    //     console.log(
-    //         // (item.הפקדות || 0) - item.benefitsPaid,
-    //         item.הפקדות,
-    //         item.benefitsPaid,
-    //         item["שם "],
-    //         item["תשלום מהנכס"],
-    //         item["השלמה בצ'ק"],
-    //         { pp: getBenefitsPaid(item) }
-    //     );
     item.discountRateCost = getDiscountRateCost(item);
     item.actuarialProfitAndLoss = getActuarialProfitsAndLoss(item);
     item.expectedAssetsReturn = getExpectedAssetsReturn(item);
@@ -171,8 +149,8 @@ data.forEach((item) => {
         "עלות היוון": item.discountRateCost,
         "הטבות ששולמו": item.benefitsPaid,
         "הפסד אקטוארי": item.actuarialProfitAndLoss,
-        "יתרת סגירה": 0,
-        // "יתרת סגירה": table[index - 1]?.salary,
+        // "יתרת סגירה": 0,
+        "יתרת סגירה": table[index - 1]?.salary,
         "פקטור אקטוארי": item.actuaryFactor,
     };
     const assets = {
@@ -202,13 +180,3 @@ const createTables = (xlType: "commitment" | "assets") => {
 
 createTables("assets");
 createTables("commitment");
-
-// var filename = "part2_commitment.xlsx";
-// var ws_name = "results";
-// var wb = XLSX.utils.book_new();
-// var ws = XLSX.utils.json_to_sheet(excelDataCommitment);
-// XLSX.utils.book_append_sheet(wb, ws, ws_name);
-// XLSX.writeFile(wb, filename);
-// console.table(table);
-// console.table(assuming);
-// console.log(discountRate[discountRate.length - 1]);

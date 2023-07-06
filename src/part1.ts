@@ -97,8 +97,6 @@ const getSeniority = (item: Data) => {
     return seniority;
 };
 const getSectionSeniority = (item: Data) => {
-    // const currentDate = moment();
-    // if (item["תאריך עזיבה "]) return 1;
     const startDate = moment(item["תאריך  קבלת סעיף 14"]);
     const sectionSeniority = currentDate.diff(startDate, "years"); //x
     return sectionSeniority;
@@ -158,6 +156,9 @@ export const discountRate = fixedDiscountRate();
 
 export const getPX = (t: number, item: Data) => {
     if (t <= 0) return 1;
+
+    // return getFixedPx(item);
+
     const _t = t + item.age;
     return 1 - getQ1(_t) - getQ2(_t) - getQ3(_t, item);
 };
@@ -189,8 +190,8 @@ const sigma1 = (item: Data) => {
             growRate = item.salaryGrowRate;
         }
         const numer =
-            (1 + growRate) ** (t + 0.5) *
-            (getPX(t + 1, item) * getQ1(x + t + 1));
+            (1 + growRate) ** (t + 0.5) * (getFixedPx(item) * getQ1(x + t + 1));
+        // (getPX(t + 1, item) * getQ1(x + t + 1));
         const denom = (1 + discountRate[t]) ** (t + 0.5);
         sum += (lastSalary * numer) / denom;
     }
@@ -208,7 +209,7 @@ const sigma2 = (item: Data) => {
         }
         const numer =
             (1 + growRate) ** (t + 0.5) *
-            (getPX(t + 1, item) * getQ3(x + t + 1, item));
+            (getFixedPx(item) * getQ3(x + t + 1, item));
         const denom = (1 + discountRate[t]) ** (t + 0.5);
         sum += (lastSalary * numer) / denom;
     }
@@ -220,12 +221,14 @@ const sigma3 = (item: Data) => {
     const assetsValue = item["שווי נכס"] || 0;
     let sum = 0;
     for (let t = 0; t <= w - x - 2; t++) {
-        sum += assetsValue * getPX(t + 1, item) * getQ2(x + t + 1);
+        sum += assetsValue * getFixedPx(item) * getQ2(x + t + 1);
     }
     return sum;
 };
 
 const calcRest = (item: Data) => {
+    // if (item["תאריך עזיבה "]) return 0;
+
     const firstLine = calcRestFirstLine(item);
     const secondLine = calcRestSecondLine(item);
     const thirdLine = calcRestThirdLine(item);
@@ -236,7 +239,7 @@ const calcRestFirstLine = (item: Data) => {
     const numer =
         item.totalSalary *
         (1 + item.salaryGrowRate) ** (item.W - item.age + 0.5) *
-        getPX(item.W - item.age - 1, item) *
+        getFixedPx(item) *
         getQ1(item.W - 1);
     const denom =
         (1 + discountRate[item.W - item.age]) ** (item.W - item.age + 0.5);
@@ -246,21 +249,29 @@ const calcRestSecondLine = (item: Data) => {
     const numer =
         item.totalSalary *
         (1 + item.salaryGrowRate) ** (item.W - item.age - 1 + 0.5) *
-        getPX(item.W - item.age - 1, item) *
+        getFixedPx(item) *
         getQ3(item.W - 1);
     const denom =
         (1 + discountRate[item.W - item.age]) ** (item.W - item.age - 1 + 0.5);
     const assetsCalculation =
-        item["שווי נכס"]! *
-        getPX(item.W - item.age - 1, item) *
-        getQ2(item.W - 1);
+        item["שווי נכס"]! * getFixedPx(item) * getQ2(item.W - 1);
     return numer / denom + assetsCalculation;
 };
+
+const getFixedPx = (item: Data) => {
+    let value = 1;
+    for (let i = 0; i < item.W - item.age; i++) {
+        value *= getPX(item.W - item.age - 1, item);
+    }
+    return value;
+};
+
 const calcRestThirdLine = (item: Data) => {
+    item.index === 56 && console.log({ px: getFixedPx(item) });
     const numer =
         item.totalSalary *
         (1 + item.salaryGrowRate) ** (item.W - item.age) *
-        getPX(item.W - item.age - 1, item) *
+        getFixedPx(item) *
         (1 - getQ1(item.W - 1) - getQ2(item.W - 1) - getQ3(item.W - 1));
     const denom = (1 + discountRate[item.W - item.age]) ** (item.W - item.age);
     return numer / denom;
@@ -271,7 +282,15 @@ const calcAll = (item: Data) => {
         sum = item["שכר "] * item.seniority * (1 - (item["אחוז סעיף 14"] || 0));
         return sum;
     }
-
+    item.index === 56 &&
+        console.log({
+            item,
+            age: item.age,
+            s1: sigma1(item),
+            s2: sigma2(item),
+            s3: sigma3(item),
+            rest: calcRest(item),
+        });
     sum = sigma1(item) + sigma2(item) + sigma3(item) + calcRest(item);
     return sum;
 };
@@ -281,17 +300,18 @@ data.forEach((item, index) => {
     table.push({
         index: item.index,
         salary: calcAll(item).toLocaleString(),
+        // salary: item.index === 1 ? 2800 : calcAll(item).toLocaleString(),
     });
 });
 
 export { table, read, data };
 
-// var filename = "write.xlsx";
-// var ws_name = "results";
-// var wb = XLSX.utils.book_new();
-// var ws = XLSX.utils.json_to_sheet(table);
-// XLSX.utils.book_append_sheet(wb, ws, ws_name);
-// XLSX.writeFile(wb, filename);
+var filename = "write.xlsx";
+var ws_name = "results";
+var wb = XLSX.utils.book_new();
+var ws = XLSX.utils.json_to_sheet(table);
+XLSX.utils.book_append_sheet(wb, ws, ws_name);
+XLSX.writeFile(wb, filename);
 // console.table(table);
 // console.table(assuming);
 // console.log(discountRate[discountRate.length - 1]);
